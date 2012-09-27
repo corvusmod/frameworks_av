@@ -628,6 +628,9 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
     if (mDataSource->readAt(*offset, hdr, 8) < 8) {
         return ERROR_IO;
     }
+#ifdef ALLWINNER
+	ALOGV("*offset:0x%llx",*offset);
+#endif
     uint64_t chunk_size = ntohl(hdr[0]);
     uint32_t chunk_type = ntohl(hdr[1]);
     off64_t data_offset = *offset + 8;
@@ -750,10 +753,22 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             off64_t stop_offset = *offset + chunk_size;
             *offset = data_offset;
             while (*offset < stop_offset) {
+#ifdef ALLWINNER
+				if (*offset < stop_offset-8) {
+                	status_t err = parseChunk(offset, depth + 1);
+					if (err != OK) {
+						return err;
+					}
+				}
+				else {
+					*offset = stop_offset;
+				}
+#else
                 status_t err = parseChunk(offset, depth + 1);
                 if (err != OK) {
                     return err;
                 }
+#endif
             }
 
             if (*offset != stop_offset) {
@@ -1061,6 +1076,9 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
                 return ERROR_IO;
             }
 
+#ifdef ALLWINNER
+            uint16_t version = U16_AT(&buffer[8]);
+#endif
             uint16_t data_ref_index = U16_AT(&buffer[6]);
             uint16_t num_channels = U16_AT(&buffer[16]);
 
@@ -1097,10 +1115,22 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
                *offset = data_offset + sizeof(buffer);
             }
             while (*offset < stop_offset) {
+#ifdef ALLWINNER
+				if (*offset < stop_offset-8) {
+					status_t err = parseChunk(offset, depth + 1);
+					if (err != OK) {
+						return err;
+					}
+				}
+				else {
+					*offset = stop_offset;
+				}
+#else
                 status_t err = parseChunk(offset, depth + 1);
                 if (err != OK) {
                     return err;
                 }
+#endif
             }
 
             if (*offset != stop_offset) {
@@ -1149,10 +1179,22 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             off64_t stop_offset = *offset + chunk_size;
             *offset = data_offset + sizeof(buffer);
             while (*offset < stop_offset) {
+#ifdef ALLWINNER
+				if (*offset < stop_offset-8) {
+					status_t err = parseChunk(offset, depth + 1);
+					if (err != OK) {
+						return err;
+					}
+            	}
+            	else {
+            		*offset = stop_offset;
+            	}
+#else
                 status_t err = parseChunk(offset, depth + 1);
                 if (err != OK) {
                     return err;
                 }
+#endif
             }
 
             if (*offset != stop_offset) {
@@ -1606,6 +1648,46 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             break;
         }
 
+#ifdef ALLWINNER
+case FOURCC('w', 'a', 'v', 'e'):
+		{
+			off64_t stop_offset = *offset + chunk_size;
+			*offset = data_offset;
+			while (*offset < stop_offset) {
+				status_t err = parseChunk(offset, depth + 1);
+				if (err != OK) {
+					if (err == INFO_VENDOR_LEAF_ATOM) {
+						*offset = stop_offset;
+						break;
+					}
+					return err;
+				}
+			}
+
+			if (*offset != stop_offset) {
+				return ERROR_MALFORMED;
+			}
+			break;
+		}
+
+        case FOURCC('f', 't', 'y', 'p'):
+		{
+			uint32_t brand;
+			if (mDataSource->readAt(data_offset, &brand, 4) < 4) {
+				return false;
+			}
+
+			brand = ntohl(brand);
+
+			if (brand == FOURCC('q', 't', ' ', ' ')) {
+				mIsQtff = true;
+			}
+
+			*offset += chunk_size;
+
+			break;
+		}
+#endif
         case FOURCC('-', '-', '-', '-'):
         {
             mLastCommentMean.clear();
@@ -1614,10 +1696,20 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             *offset += chunk_size;
             break;
         }
+#ifdef ALLWINNER
+
+        case 0: //leaf atom
+		{
+        	return INFO_VENDOR_LEAF_ATOM;
+		}
+#endif
 
         default:
         {
             *offset += chunk_size;
+#ifdef ALLWINNER
+			ALOGV("skip parser chunk");
+#endif
             break;
         }
     }
@@ -2204,6 +2296,9 @@ size_t MPEG4Source::parseNALSize(const uint8_t *data) const {
 status_t MPEG4Source::read(
         MediaBuffer **out, const ReadOptions *options) {
     Mutex::Autolock autoLock(mLock);
+#ifdef ALLWINNER
+	bool isSeekMode = false;
+#endif
 
     CHECK(mStarted);
 
@@ -2220,6 +2315,9 @@ status_t MPEG4Source::read(
                 findFlags = SampleTable::kFlagBefore;
                 break;
             case ReadOptions::SEEK_NEXT_SYNC:
+#ifdef ALLWINNER
+			case ReadOptions::SEEK_VENDOR_OPT:
+#endif
                 findFlags = SampleTable::kFlagAfter;
                 break;
             case ReadOptions::SEEK_CLOSEST_SYNC:
@@ -2231,7 +2329,13 @@ status_t MPEG4Source::read(
                 break;
         }
 
+#ifdef ALLWINNER
+		isSeekMode = true;
+#endif
         uint32_t sampleIndex;
+#ifdef ALLWINNER
+		ALOGV("seekTimeUs:%lld mTimescale:%d to:%lld",seekTimeUs,mTimescale,seekTimeUs * mTimescale / 1000000);
+#endif
         status_t err = mSampleTable->findSampleAtTime(
                 seekTimeUs * mTimescale / 1000000,
                 &sampleIndex, findFlags);
@@ -2248,6 +2352,50 @@ status_t MPEG4Source::read(
             err = mSampleTable->findSyncSampleNear(
                     sampleIndex, &syncSampleIndex, findFlags);
         }
+
+#ifdef ALLWINNER
+
+        ALOGV("syncSampleIndex:%d",syncSampleIndex);
+
+        if (mode == ReadOptions::SEEK_VENDOR_OPT) {
+            off64_t offset;
+            size_t size;
+            uint64_t cts;
+			status_t err;
+			uint32_t currSampleIndex = syncSampleIndex;
+			int64_t offsetBefind;
+			uint32_t left;
+			uint32_t right;
+
+			offsetBefind = options->getLateBy();
+			mSampleTable->getMetaDataForSample(currSampleIndex, &offset, &size, &cts);
+
+			if(offset < offsetBefind) {
+				left = currSampleIndex;
+				right = mSampleTable->countSamples() - 1;
+
+				while (left < right) {
+					uint32_t center = (left + right) / 2;
+					mSampleTable->getMetaDataForSample(center, &offset, &size, &cts);
+					ALOGV("offsetBefind:0x%llx offset:0x%llx center:%d left:%d right:%d",offsetBefind, offset, center, left, right);
+					if (offsetBefind < offset) {
+						right = center;
+					} else if (offsetBefind > offset) {
+						left = center + 1;
+					} else {
+						left = center;
+						break;
+					}
+				}
+
+				currSampleIndex = left;
+
+				mSampleTable->getMetaDataForSample(currSampleIndex, &offset, &size, &cts);
+			}
+
+			syncSampleIndex = sampleIndex = currSampleIndex;
+        }
+#endif
 
         uint64_t sampleTime;
         if (err == OK) {
@@ -2346,7 +2494,14 @@ status_t MPEG4Source::read(
             mBuffer->set_range(0, size);
             mBuffer->meta_data()->clear();
             mBuffer->meta_data()->setInt64(
+#ifdef ALLWINNER
+kKeyTime, ((int64_t)cts * 1000000) / mTimescale);
+            if (isSeekMode) { //set video offset
+            	mBuffer->meta_data()->setInt64(kKeyOffset, offset);
+            }
+#else
                     kKeyTime, (cts * 1000000) / mTimescale);
+#endif
 
             if (targetSampleTimeUs >= 0) {
                 mBuffer->meta_data()->setInt64(
@@ -2478,7 +2633,14 @@ status_t MPEG4Source::read(
 
         mBuffer->meta_data()->clear();
         mBuffer->meta_data()->setInt64(
+#ifdef ALLWINNER
+kKeyTime, ((int64_t)cts * 1000000) / mTimescale);
+        if (isSeekMode) { //set video offset
+        	mBuffer->meta_data()->setInt64(kKeyOffset, offset);
+        }
+#else
                 kKeyTime, (cts * 1000000) / mTimescale);
+#endif
 
         if (targetSampleTimeUs >= 0) {
             mBuffer->meta_data()->setInt64(

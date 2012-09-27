@@ -177,7 +177,9 @@ void DataSource::RegisterDefaultSniffers() {
     RegisterSniffer(SniffMP3);
     RegisterSniffer(SniffAAC);
     RegisterSniffer(SniffMPEG2PS);
+#ifndef ALLWINNER
     RegisterSniffer(SniffWVM);
+#endif
 #ifdef QCOM_HARDWARE
     ExtendedExtractor::RegisterSniffers();
 #endif

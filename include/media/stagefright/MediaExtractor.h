@@ -35,9 +35,16 @@ public:
     virtual size_t countTracks() = 0;
     virtual sp<MediaSource> getTrack(size_t index) = 0;
 
+#ifdef ALLWINNER
+    enum GetTrackMetaDataFlags {
+        kIncludeExtensiveMetaData = 1,
+	kIncludeExtensiveMetaDataBitrate = 256
+    };
+#else
     enum GetTrackMetaDataFlags {
         kIncludeExtensiveMetaData = 1
     };
+#endif
     virtual sp<MetaData> getTrackMetaData(
             size_t index, uint32_t flags = 0) = 0;
 

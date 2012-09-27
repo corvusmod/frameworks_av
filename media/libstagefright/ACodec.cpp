@@ -37,8 +37,18 @@
 #include "sec_format.h"
 #endif
 
+#ifdef ALLWINNER
+#include <ui/GraphicBufferMapper.h>
+#endif
+
 namespace android {
 
+#ifdef ALLWINNER
+static int ALIGN(int x, int y) {
+    // y must be a power of 2.
+    return (x + y - 1) & ~(y - 1);
+}
+#endif
 template<class T>
 static void InitOMXParams(T *params) {
     params->nSize = sizeof(T);
@@ -958,13 +968,22 @@ status_t ACodec::configureCodec(
             || !strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_G711_MLAW)) {
         // These are PCM-like formats with a fixed sample rate but
         // a variable number of channels.
-
+#ifdef ALLWINNER
+int32_t numChannels, sampleRate;;
+        if (!msg->findInt32("channel-count", &numChannels)
+				|| !msg->findInt32("sample-rate", &sampleRate)) {
+            err = INVALID_OPERATION;
+        } else {
+            err = setupG711Codec(encoder, numChannels, sampleRate);
+        }
+#else
         int32_t numChannels;
         if (!msg->findInt32("channel-count", &numChannels)) {
             err = INVALID_OPERATION;
         } else {
             err = setupG711Codec(encoder, numChannels);
         }
+#endif
     } else if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_FLAC)) {
         int32_t numChannels, sampleRate, compressionLevel = -1;
         if (encoder &&
@@ -1259,12 +1278,18 @@ status_t ACodec::setupAMRCodec(bool encoder, bool isWAMR, int32_t bitrate) {
             isWAMR ? 16000 : 8000 /* sampleRate */,
             1 /* numChannels */);
 }
-
+#ifdef ALLWINNER
+status_t ACodec::setupG711Codec(bool encoder, int32_t numChannels,int32_t sampleRate) {
+#else
 status_t ACodec::setupG711Codec(bool encoder, int32_t numChannels) {
+#endif
     CHECK(!encoder);  // XXX TODO
-
     return setupRawAudioFormat(
+#ifdef ALLWINNER
+			kPortIndexInput,  sampleRate , numChannels);
+#else
             kPortIndexInput, 8000 /* sampleRate */, numChannels);
+#endif
 }
 
 status_t ACodec::setupFlacCodec(
@@ -2605,10 +2630,18 @@ void ACodec::BaseState::onInputBufferFilled(const sp<AMessage> &msg) {
                         ALOGV("[%s] Needs to copy input data.",
                              mCodec->mComponentName.c_str());
                     }
-
+#ifdef ALLWINNER
+	        if (buffer->size() > info->mData->capacity()) 
+       	           memcpy(info->mData->data(), buffer->data(), info->mData->capacity());
+	        else 
+       		   memcpy(info->mData->data(), buffer->data(), buffer->size()); 
+			}
+		
+#else
                     CHECK_LE(buffer->size(), info->mData->capacity());
                     memcpy(info->mData->data(), buffer->data(), buffer->size());
-                }
+			}
+#endif
 
                 if (flags & OMX_BUFFERFLAG_CODECCONFIG) {
                     ALOGV("[%s] calling emptyBuffer %p w/ codec specific data",
@@ -2823,7 +2856,49 @@ void ACodec::BaseState::onOutputBufferDrained(const sp<AMessage> &msg) {
             mCodec->signalError(OMX_ErrorUndefined, err);
             info->mStatus = BufferInfo::OWNED_BY_US;
         }
-    } else {
+    } 
+
+#ifdef ALLWINNER
+		else if (mCodec->mNativeWindowSoft != NULL
+                && msg->findInt32("render", &render) && render != 0)  {
+        ANativeWindowBuffer *buf;
+        int err;
+        if ((err = mCodec->mNativeWindowSoft->dequeueBuffer(mCodec->mNativeWindowSoft.get(), &buf)) != 0) {
+            ALOGW("Surface::dequeueBuffer returned error %d", err);
+            return;
+        }
+
+        CHECK_EQ(0, mCodec->mNativeWindowSoft->lockBuffer(mCodec->mNativeWindowSoft.get(), buf));
+
+        GraphicBufferMapper &mapper = GraphicBufferMapper::get();
+
+        Rect bounds(mCodec->mVideoWidth, mCodec->mVideoHeight);
+
+        void *dst;
+        CHECK_EQ(0, mapper.lock(
+                    buf->handle, GRALLOC_USAGE_SW_WRITE_OFTEN, bounds, &dst));
+
+        //ALOGV("mColorFormat: %d", mColorFormat);
+        size_t dst_y_size = buf->stride * buf->height;
+        size_t dst_c_stride = ALIGN(buf->stride / 2, 16);
+        size_t dst_c_size = dst_c_stride * buf->height / 2;
+
+        memcpy(dst, info->mData->data(), dst_y_size + dst_c_size*2);
+        ALOGV("soft render buffer...%dX%d",mCodec->mVideoWidth,mCodec->mVideoHeight);
+
+        CHECK_EQ(0, mapper.unlock(buf->handle));
+
+        if ((err = mCodec->mNativeWindowSoft->queueBuffer(mCodec->mNativeWindowSoft.get(), buf)) != 0) {
+            ALOGW("Surface::queueBuffer returned error %d", err);
+        }
+        buf = NULL;
+
+        info->mStatus = BufferInfo::OWNED_BY_US;
+    } 
+
+#endif
+
+else {
         info->mStatus = BufferInfo::OWNED_BY_US;
     }
 
@@ -3075,6 +3150,9 @@ void ACodec::LoadedState::onShutdown(bool keepComponentAllocated) {
         CHECK_EQ(mCodec->mOMX->freeNode(mCodec->mNode), (status_t)OK);
 
         mCodec->mNativeWindow.clear();
+#ifdef ALLWINNER
+		mCodec->mNativeWindowSoft.clear();
+#endif
         mCodec->mNode = NULL;
         mCodec->mOMX.clear();
         mCodec->mQuirks = 0;
@@ -3156,8 +3234,13 @@ bool ACodec::LoadedState::onConfigureComponent(
     }
 
     sp<RefBase> obj;
+#ifdef ALLWINNER
+	if (msg->findObject("native-window", &obj)
+    	&& strncmp("OMX.google.", mCodec->mComponentName.c_str(), 11) ){
+#else
     if (msg->findObject("native-window", &obj)
-            && strncmp("OMX.google.", mCodec->mComponentName.c_str(), 11)) {
+            && (strncmp("OMX.google.", mCodec->mComponentName.c_str(), 11) || !strncmp("OMX.google.h264", mCodec->mComponentName.c_str(), 15))) {
+#endif
         sp<NativeWindowWrapper> nativeWindow(
                 static_cast<NativeWindowWrapper *>(obj.get()));
         CHECK(nativeWindow != NULL);
@@ -3167,6 +3250,47 @@ bool ACodec::LoadedState::onConfigureComponent(
                 mCodec->mNativeWindow.get(),
                 NATIVE_WINDOW_SCALING_MODE_SCALE_TO_WINDOW);
     }
+
+#ifdef ALLWINNER
+else if (msg->findObject("native-window", &obj)
+			&& mCodec->mNativeWindow == NULL) {
+		sp<NativeWindowWrapper> nativeWindow(
+				static_cast<NativeWindowWrapper *>(obj.get()));
+		CHECK(nativeWindow != NULL);
+
+		mCodec->mNativeWindowSoft = nativeWindow->getNativeWindow();
+		ALOGV("setup software native window");
+
+		if (!strncasecmp(mime.c_str(), "video/", 6)) {
+			int32_t width, height;
+			CHECK(msg->findInt32("width", &width));
+			CHECK(msg->findInt32("height", &height));
+
+			height = ((height + 7)>>3)<<3;
+			mCodec->mVideoWidth = width;
+			mCodec->mVideoHeight = height;
+
+		    CHECK_EQ(0,
+		            native_window_set_usage(
+		            mCodec->mNativeWindowSoft.get(),
+		            GRALLOC_USAGE_SW_READ_NEVER | GRALLOC_USAGE_SW_WRITE_OFTEN
+		            | GRALLOC_USAGE_HW_TEXTURE | GRALLOC_USAGE_EXTERNAL_DISP));
+
+		    CHECK_EQ(0,
+		            native_window_set_scaling_mode(
+		            mCodec->mNativeWindowSoft.get(),
+		            NATIVE_WINDOW_SCALING_MODE_SCALE_TO_WINDOW));
+
+		    // Width must be multiple of 32???
+		    CHECK_EQ(0, native_window_set_buffers_geometry(
+		    			mCodec->mNativeWindowSoft.get(),
+		                width,
+		                height,
+		                HAL_PIXEL_FORMAT_YV12));
+		}
+    }
+
+#endif
     CHECK_EQ((status_t)OK, mCodec->initNativeWindow());
 
     {

@@ -369,7 +369,12 @@ void AMPEG4ElementaryAssembler::submitAccessUnit() {
 
     sp<ABuffer> accessUnit;
 
-    if (mIsGeneric) {
+#ifdef ALLWINNER
+	if (0) //for CedarXPlayer
+#else
+    if (mIsGeneric)  //for NuPlayer
+#endif
+	{
         accessUnit = MakeADTSCompoundFromAACFrames(
                 OMX_AUDIO_AACObjectLC - 1,
                 mSampleRateIndex,

@@ -799,7 +799,11 @@ bool SniffFLAC(
     // no need to read rest of the header, as a premature EOF will be caught later
     uint8_t header[4+4];
     if (source->readAt(0, header, sizeof(header)) != sizeof(header)
+#ifdef ALLWINNER
+			|| memcmp("fLaC", header, 4))
+#else
             || memcmp("fLaC\0\0\0\042", header, 4+4))
+#endif
     {
         return false;
     }

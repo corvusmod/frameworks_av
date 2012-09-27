@@ -187,6 +187,9 @@ NuCachedSource2::NuCachedSource2(
       mCache(new PageCache(kPageSize)),
       mCacheOffset(0),
       mFinalStatus(OK),
+#ifdef ALLWINNER
+      mForceReconnect(false),
+#endif
       mLastAccessPos(0),
       mFetching(true),
       mLastFetchTimeUs(-1),
@@ -299,6 +302,13 @@ void NuCachedSource2::fetchInternal() {
             --mNumRetriesLeft;
 
             reconnect = true;
+#ifdef ALLWINNER
+		}
+        else if (mForceReconnect) {
+        	ALOGD("ForceReconnect!!!");
+        	mForceReconnect = false;
+        	reconnect = true;
+#endif
         }
     }
 
@@ -563,7 +573,11 @@ ssize_t NuCachedSource2::readInternal(off64_t offset, void *data, size_t size) {
 #endif
     if (offset < mCacheOffset
             || offset >= (off64_t)(mCacheOffset + mCache->totalSize())) {
+#ifdef ALLWINNER
+		static const off64_t kPadding = 0; //256 * 1024;
+#else
         static const off64_t kPadding = 256 * 1024;
+#endif
 
         // In the presence of multiple decoded streams, once of them will
         // trigger this seek request, the other one will request data "nearby"
@@ -618,9 +632,17 @@ status_t NuCachedSource2::seekInternal_l(off64_t offset) {
     size_t totalSize = mCache->totalSize();
     CHECK_EQ(mCache->releaseFromStart(totalSize), totalSize);
 
+#ifdef ALLWINNER
+	if(mFinalStatus < 0) {
+       	mForceReconnect = true;
+    }
+    mNumRetriesLeft = kMaxNumRetries;
+    mFinalStatus = OK;
+    mFetching = true;
+#else
     mNumRetriesLeft = kMaxNumRetries;
     mFetching = true;
-
+#endif
     return OK;
 }
 

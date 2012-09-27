@@ -402,7 +402,11 @@ status_t WAVSource::read(
     }
 
     size_t maxBytesToRead =
+#ifdef ALLWINNER
+		mBitsPerSample == 8 ? kMaxFrameSize / 2 : (mBitsPerSample == 24 ? (kMaxFrameSize>>2)*3: kMaxFrameSize);//mBitsPerSample == 8 ? kMaxFrameSize / 2 : kMaxFrameSize;
+#else
         mBitsPerSample == 8 ? kMaxFrameSize / 2 : kMaxFrameSize;
+#endif
 
     size_t maxBytesAvailable =
         (mCurrentPos - mOffset >= (off64_t)mSize)

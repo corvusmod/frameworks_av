@@ -7,6 +7,10 @@ ifeq ($(BOARD_USES_ALSA_AUDIO),true)
     endif
 endif
 
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+LOCAL_CFLAGS += -DALLWINNER 
+endif
+
 include frameworks/av/media/libstagefright/codecs/common/Config.mk
 
 ifeq ($(TARGET_SOC),exynos4210)
@@ -125,6 +129,11 @@ LOCAL_SHARED_LIBRARIES := \
         libvorbisidec \
         libz \
 
+ifneq ($(TARGET_BOARD_PLATFORM),exDroid)
+LOCAL_STATIC_LIBRARIES := \
+        libstagefright_httplive 
+endif
+
 LOCAL_STATIC_LIBRARIES := \
         libstagefright_color_conversion \
         libstagefright_aacenc \
@@ -132,9 +141,17 @@ LOCAL_STATIC_LIBRARIES := \
         libstagefright_timedtext \
         libvpx \
         libstagefright_mpeg2ts \
-        libstagefright_httplive \
         libstagefright_id3 \
         libFLAC \
+
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+	ifeq ($(CEDARX_DEBUG_FRAMEWORK),S)
+	LOCAL_STATIC_LIBRARIES += libstagefright_httplive_opt
+	else
+	LOCAL_LDFLAGS += \
+		$(CEDARX_TOP)/../CedarAndroidLib/$(CEDARX_PREBUILD_LIB_PATH)/libstagefright_httplive_opt.a
+	endif
+endif
 
 ifeq ($(call is-vendor-board-platform,QCOM),true)
 endif

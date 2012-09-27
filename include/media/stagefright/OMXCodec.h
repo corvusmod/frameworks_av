@@ -276,6 +276,7 @@ private:
             int32_t aacProfile, bool isADTS);
 
     void setG711Format(int32_t numChannels);
+
 #ifdef QCOM_HARDWARE
     void setQCELPFormat( int32_t sampleRate, int32_t numChannels, int32_t bitRate);
     void setEVRCFormat( int32_t sampleRate, int32_t numChannels, int32_t bitRate);

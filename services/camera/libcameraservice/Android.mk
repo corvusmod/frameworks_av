@@ -1,5 +1,9 @@
 LOCAL_PATH:= $(call my-dir)
 
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+LOCAL_CFLAGS += -DALLWINNER 
+endif
+
 #
 # libcameraservice
 #
