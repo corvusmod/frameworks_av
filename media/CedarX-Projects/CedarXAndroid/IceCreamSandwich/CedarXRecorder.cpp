@@ -31,8 +31,6 @@
 #include <CDX_Recorder.h>
 #include <include_writer/recorde_writer.h>
 
-#include <media/mediarecorder.h>
-
 #define F_LOG 	LOGV("%s, line: %d", __FUNCTION__, __LINE__);
 
 extern "C" int CedarXRecorderCallbackWrapper(void *cookie, int event, void *info);

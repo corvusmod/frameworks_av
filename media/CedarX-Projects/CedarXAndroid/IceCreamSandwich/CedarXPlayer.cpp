@@ -60,8 +60,6 @@
 #include <hardware/hwcomposer.h>
 #include <cutils/properties.h>
 
-#include <media/mediarecorder.h>
-
 #define PROP_CHIP_VERSION_KEY  "media.cedarx.chipver"
 #define PROP_CONSTRAINT_RES_KEY  "media.cedarx.cons_res"
 

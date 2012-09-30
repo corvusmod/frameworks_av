@@ -111,8 +111,7 @@ void LiveSession::seekTo(int64_t timeUs, int64_t* newSeekTime ) {
 
     while (mSeeking) {
         mCondition.wait(mLock);
-#ifdef ALLWINNER
-#else
+#ifndef ALLWINNER
         if( newSeekTime != NULL ) {
            *newSeekTime = mSeekTimeUs;
            ALOGV("new Seek Time %lld", mSeekTimeUs);

@@ -13,8 +13,6 @@
 
 #include <CDX_Recorder.h>
 
-#include <media/mediarecorder.h>
-
 namespace android {
 
 class Camera;

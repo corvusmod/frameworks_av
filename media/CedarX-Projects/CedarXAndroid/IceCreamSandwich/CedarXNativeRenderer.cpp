@@ -31,8 +31,6 @@
 #include <ui/GraphicBufferMapper.h>
 #include <gui/ISurfaceTexture.h>
 
-#include <media/mediarecorder.h>
-
 namespace android {
 
 CedarXNativeRenderer::CedarXNativeRenderer(
