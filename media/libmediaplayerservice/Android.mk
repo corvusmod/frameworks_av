@@ -4,11 +4,11 @@ LOCAL_PATH:= $(call my-dir)
 # libmediaplayerservice
 #
 
+include $(CLEAR_VARS)
+
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_CFLAGS += -DALLWINNER 
 endif
-
-include $(CLEAR_VARS)
 
 LOCAL_SRC_FILES:=               \
     ActivityManager.cpp         \

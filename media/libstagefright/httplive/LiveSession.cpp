@@ -116,6 +116,7 @@ void LiveSession::seekTo(int64_t timeUs, int64_t* newSeekTime ) {
            *newSeekTime = mSeekTimeUs;
            ALOGV("new Seek Time %lld", mSeekTimeUs);
         }
+	return 0;
 #endif
     }
     mSeekTimeUs = -1;

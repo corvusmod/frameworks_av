@@ -2,7 +2,7 @@
 
 ############################################################################
 CEDARM_TOP := ${CEDARX_TOP}/libexternal/CedarM
-CEDARX_EXT_CFLAGS :=
+CEDARX_EXT_CFLAGS := -DALLWINNER
 CEDARX_PRODUCTOR := GENERIC
 CEDARX_DEBUG_ENABLE := N
 CEDARX_DEBUG_FRAMEWORK := N
