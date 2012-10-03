@@ -1,7 +1,13 @@
 LOCAL_PATH:= $(call my-dir)
+
 include $(CLEAR_VARS)
 
 include $(TOP)/frameworks/av/media/CedarX-Projects/Config.mk
+
+
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+LOCAL_CFLAGS += -DALLWINNER
+endif
 
 LOCAL_SRC_FILES:=                    \
         CedarXAudioPlayer.cpp        \
@@ -29,6 +35,8 @@ LOCAL_C_INCLUDES += \
     $(TOP)/frameworks/av/media/libstagefright/include \
     $(TOP)/frameworks/av \
     $(TOP)/frameworks/av/include \
+    $(TOP)/system/core/include \
+    $(TOP)/hardware/libhardware/include \
     $(TOP)/external/openssl/include \
     $(TOP)/frameworks/native/include/media/hardware 
 

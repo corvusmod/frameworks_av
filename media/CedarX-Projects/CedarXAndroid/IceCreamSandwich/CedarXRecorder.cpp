@@ -21,8 +21,10 @@
 
 #include <media/stagefright/MetaData.h>
 #include <media/MediaProfiles.h>
+#include <media/MediaPlayerInterface.h>
 #include <camera/ICamera.h>
 #include <camera/CameraParameters.h>
+#include <system/camera.h>
 
 #include <type_camera.h>
 #include <OMX_Core.h>

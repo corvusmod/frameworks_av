@@ -47,6 +47,8 @@
 
 #include <AwesomePlayer.h>
 
+#include <media/MediaPlayerInterface.h>
+
 #if (CEDARX_ANDROID_VERSION < 7)
 #include <surfaceflinger/Surface.h>
 #include <surfaceflinger/ISurfaceComposer.h>
