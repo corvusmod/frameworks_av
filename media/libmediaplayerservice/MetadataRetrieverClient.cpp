@@ -167,7 +167,7 @@ status_t MetadataRetrieverClient::setDataSource(int fd, int64_t offset, int64_t 
 	player_type playerType = getPlayerType(fd, offset, length, false);
 #else
     player_type playerType = getPlayerType(fd, offset, length);
-#endig
+#endif
     ALOGV("player type = %d", playerType);
     sp<MediaMetadataRetrieverBase> p = createRetriever(playerType);
     if (p == NULL) {
