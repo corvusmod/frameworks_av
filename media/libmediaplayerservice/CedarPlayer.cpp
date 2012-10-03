@@ -9,6 +9,8 @@
 #include <media/Metadata.h>
 #include <media/stagefright/MediaExtractor.h>
 
+#include <media/MediaPlayerInterface.h>
+
 namespace android {
 
 CedarPlayer::CedarPlayer()

@@ -25,6 +25,16 @@ LOCAL_SRC_FILES:=               \
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_SRC_FILES:=               \
+    ActivityManager.cpp         \
+    Crypto.cpp                  \
+    MediaRecorderClient.cpp     \
+    MediaPlayerService.cpp      \
+    MetadataRetrieverClient.cpp \
+    TestPlayerStub.cpp          \
+    MidiMetadataRetriever.cpp   \
+    MidiFile.cpp                \
+    StagefrightPlayer.cpp       \
+    MidiFile.cpp		\
     CedarPlayer.cpp       	\
     StagefrightRecorder.cpp	\
     CedarAPlayerWrapper.cpp	\
@@ -51,6 +61,20 @@ LOCAL_SHARED_LIBRARIES :=     		\
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_SHARED_LIBRARIES :=     		\
+ libcutils                               \
+        libutils                                \
+        libbinder                               \
+        libvorbisidec                           \
+        libsonivox                              \
+        libmedia                                \
+        libmedia_native                         \
+        libcamera_client                        \
+        libstagefright                          \
+        libstagefright_omx                      \
+        libstagefright_foundation       \
+        libgui                          \
+        libdl                           \
+        libaah_rtp			\
 	libCedarX           			\
 	libCedarA           			
 endif
@@ -68,7 +92,12 @@ LOCAL_C_INCLUDES :=                                               \
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_C_INCLUDES :=                                               \
-$(TOP)/frameworks/av/media/CedarX-Projects/CedarXAndroid/IceCreamSandwich \
+	$(call include-path-for, graphics corecg)                       \
+	$(TOP)/frameworks/av/media/libstagefright/include               \
+	$(TOP)/frameworks/av/media/libstagefright/rtsp                  \
+	$(TOP)/frameworks/native/include/media/openmax                  \
+	$(TOP)/external/tremolo/Tremolo                                 \
+        $(TOP)/frameworks/av/media/CedarX-Projects/CedarXAndroid/IceCreamSandwich \
         $(TOP)/frameworks/av/media/CedarX-Projects/CedarX/include/include_audio \
         $(TOP)/frameworks/av/media/CedarX-Projects/CedarX/include/include_cedarv \
         $(TOP)/frameworks/av/media/CedarX-Projects/CedarX/include \
