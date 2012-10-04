@@ -99,9 +99,6 @@ void LiveSession::disconnect() {
 
 #ifdef ALLWINNER
 int64_t LiveSession::seekTo(int64_t timeUs) {
-#else
-void LiveSession::seekTo(int64_t timeUs, int64_t* newSeekTime ) {
-#endif
     Mutex::Autolock autoLock(mLock);
     mSeeking = true;
 
@@ -111,18 +108,29 @@ void LiveSession::seekTo(int64_t timeUs, int64_t* newSeekTime ) {
 
     while (mSeeking) {
         mCondition.wait(mLock);
-#ifndef ALLWINNER
-        if( newSeekTime != NULL ) {
+    }
+    mSeekTimeUs = -1;
+    return 0;
+}
+#else
+void LiveSession::seekTo(int64_t timeUs, int64_t* newSeekTime ) {
+Mutex::Autolock autoLock(mLock);
+    mSeeking = true;
+
+    sp<AMessage> msg = new AMessage(kWhatSeek, id());
+    msg->setInt64("timeUs", timeUs);
+    msg->post();
+
+    while (mSeeking) {
+        mCondition.wait(mLock);
+	if( newSeekTime != NULL ) {
            *newSeekTime = mSeekTimeUs;
            ALOGV("new Seek Time %lld", mSeekTimeUs);
         }
-#endif
     }
     mSeekTimeUs = -1;
-#ifdef ALLWINNER
-return 0;
-#endif
 }
+#endif
 
 void LiveSession::setCurrentPlayingTime(int64_t curPlayTime) {
     mCurrentPlayingTime = curPlayTime;
