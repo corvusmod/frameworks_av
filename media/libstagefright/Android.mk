@@ -149,7 +149,7 @@ ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 	LOCAL_STATIC_LIBRARIES += libstagefright_httplive_opt
 	else
 	LOCAL_LDFLAGS += \
-	$(CEDARX_TOP)/../CedarAndroidLib/$(CEDARX_PREBUILD_LIB_PATH)/libstagefright_httplive_opt.a
+	$(CEDARX_TOP)/CedarAndroidLib/$(CEDARX_PREBUILD_LIB_PATH)/libstagefright_httplive_opt.a
 	endif
 endif
 
