@@ -1,9 +1,5 @@
 LOCAL_PATH:= $(call my-dir)
 
-#
-# libmediaplayerservice
-#
-
 include $(CLEAR_VARS)
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
@@ -18,23 +14,12 @@ LOCAL_SRC_FILES:=               \
     MetadataRetrieverClient.cpp \
     TestPlayerStub.cpp          \
     MidiMetadataRetriever.cpp   \
-    MidiFile.cpp                \
     StagefrightPlayer.cpp       \
     MidiFile.cpp                
 
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_SRC_FILES:=               \
-    ActivityManager.cpp         \
-    Crypto.cpp                  \
-    MediaRecorderClient.cpp     \
-    MediaPlayerService.cpp      \
-    MetadataRetrieverClient.cpp \
-    TestPlayerStub.cpp          \
-    MidiMetadataRetriever.cpp   \
-    MidiFile.cpp                \
-    StagefrightPlayer.cpp       \
-    MidiFile.cpp		\
     CedarPlayer.cpp       	\
     StagefrightRecorder.cpp	\
     CedarAPlayerWrapper.cpp	\
@@ -61,7 +46,7 @@ LOCAL_SHARED_LIBRARIES :=     		\
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_SHARED_LIBRARIES :=     		\
-	libcutils                               \
+ libcutils                               \
         libutils                                \
         libbinder                               \
         libvorbisidec                           \

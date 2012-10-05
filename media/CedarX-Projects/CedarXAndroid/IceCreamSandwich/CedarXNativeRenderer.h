@@ -25,8 +25,6 @@
 #endif
 #include <hardware/hwcomposer.h>
 
-#include <media/MediaPlayerInterface.h>
-
 namespace android {
 
 enum VIDEORENDER_CMD

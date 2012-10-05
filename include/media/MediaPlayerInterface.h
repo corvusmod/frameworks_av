@@ -64,10 +64,10 @@ enum player_type {
     // argument to the 'test:' url in the setDataSource call.
     TEST_PLAYER = 5,
 
-//#ifdef ALLWINNER
+#ifdef ALLWINNER
     CEDARX_PLAYER = 8,
     CEDARA_PLAYER = 9,
-//#endif
+#endif
 
     AAH_RX_PLAYER = 100,
     AAH_TX_PLAYER = 101,

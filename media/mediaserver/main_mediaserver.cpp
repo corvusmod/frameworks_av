@@ -26,7 +26,8 @@
 // from LOCAL_C_INCLUDES
 #include "AudioFlinger.h"
 #include "CameraService.h"
-#include "MediaPlayerService.h"
+//#include "MediaPlayerService.h"
+#include <MediaPlayerService.h>
 #include "AudioPolicyService.h"
 
 using namespace android;

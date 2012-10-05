@@ -17,8 +17,7 @@
 #define LOG_TAG "CedarXNativeRenderer"
 #include <CDX_Debug.h>
 
-//#include "CedarXNativeRenderer.h"
-#include <CedarXNativeRenderer.h>
+#include "CedarXNativeRenderer.h"
 #include <media/stagefright/foundation/ADebug.h>
 #include <media/stagefright/MetaData.h>
 
@@ -31,8 +30,6 @@
 
 #include <ui/GraphicBufferMapper.h>
 #include <gui/ISurfaceTexture.h>
-
-#include <media/MediaPlayerInterface.h>
 
 namespace android {
 
