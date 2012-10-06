@@ -130,7 +130,7 @@ LOCAL_SHARED_LIBRARIES := \
         libz \
 
 ifneq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_STATIC_LIBRARIES := \
+LOCAL_STATIC_LIBRARIES += \
         libstagefright_httplive 
 endif
 

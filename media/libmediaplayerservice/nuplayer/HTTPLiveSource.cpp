@@ -23,7 +23,8 @@
 #include "ATSParser.h"
 #include "AnotherPacketSource.h"
 #include "LiveDataSource.h"
-#include "LiveSession.h"
+//#include "LiveSession.h"
+#include <LiveSession.h>
 
 #include <media/stagefright/foundation/ABuffer.h>
 #include <media/stagefright/foundation/ADebug.h>
@@ -202,7 +203,7 @@ status_t NuPlayer::HTTPLiveSource::seekTo(int64_t seekTimeUs) {
     mNewSeekTime = newSeekTime;
 #else
     mLiveSession->seekTo(seekTimeUs);
-#endif
+#endif 
 
     return OK;
 }

@@ -15,13 +15,13 @@ LOCAL_SRC_FILES:=               \
     TestPlayerStub.cpp          \
     MidiMetadataRetriever.cpp   \
     StagefrightPlayer.cpp       \
+    StagefrightRecorder.cpp	\
     MidiFile.cpp                
 
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_SRC_FILES:=               \
+LOCAL_SRC_FILES +=               \
     CedarPlayer.cpp       	\
-    StagefrightRecorder.cpp	\
     CedarAPlayerWrapper.cpp	\
     SimpleMediaFormatProbe.cpp	\
     MovAvInfoDetect.cpp		
@@ -45,8 +45,8 @@ LOCAL_SHARED_LIBRARIES :=     		\
 
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_SHARED_LIBRARIES :=     		\
- libcutils                               \
+LOCAL_SHARED_LIBRARIES +=     		\
+        libcutils                               \
         libutils                                \
         libbinder                               \
         libvorbisidec                           \
@@ -76,12 +76,7 @@ LOCAL_C_INCLUDES :=                                               \
 	$(TOP)/external/tremolo/Tremolo                                 
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_C_INCLUDES :=                                               \
-	$(call include-path-for, graphics corecg)                       \
-	$(TOP)/frameworks/av/media/libstagefright/include               \
-	$(TOP)/frameworks/av/media/libstagefright/rtsp                  \
-	$(TOP)/frameworks/native/include/media/openmax                  \
-	$(TOP)/external/tremolo/Tremolo                                 \
+LOCAL_C_INCLUDES +=                                               \
         $(TOP)/frameworks/av/media/CedarX-Projects/CedarXAndroid/IceCreamSandwich \
         $(TOP)/frameworks/av/media/CedarX-Projects/CedarX/include/include_audio \
         $(TOP)/frameworks/av/media/CedarX-Projects/CedarX/include/include_cedarv \
