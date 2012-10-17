@@ -78,6 +78,10 @@ ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
  		IDirectTrackClient.cpp
 endif
 
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+    LOCAL_CFLAGS += -DALLWINNER
+endif
+
 LOCAL_SHARED_LIBRARIES := \
 	libui libcutils libutils libbinder libsonivox libicuuc libexpat \
         libcamera_client libstagefright_foundation \
