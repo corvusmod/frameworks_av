@@ -258,7 +258,7 @@ public:
     	    static  status_t        getScreen(int *screen);
     	    static  status_t        isPlayingVideo(bool *playing);
     /* add by Gary. end   -----------------------------------}} */
-    
+
     /* add by Gary. start {{----------------------------------- */
     /* 2011-9-13 14:05:05 */
     /* expend interfaces about subtitle, track and so on */
