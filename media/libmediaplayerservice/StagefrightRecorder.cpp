@@ -953,6 +953,7 @@ status_t status = OK;
     status_t status = OK;
 #endif
 
+    status_t status = OK;
 #if defined(QCOM_HARDWARE) && defined(QCOM_FM_ENABLED)
     if(AUDIO_SOURCE_FM_RX_A2DP == mAudioSource)
         return startFMA2DPWriter();

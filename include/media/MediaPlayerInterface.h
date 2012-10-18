@@ -28,7 +28,9 @@
 #include <media/mediaplayer.h>
 #include <media/AudioSystem.h>
 #include <media/Metadata.h>
+#ifdef ALLWINNER
 #include "mediaplayerinfo.h"
+#endif
 
 // Fwd decl to make sure everyone agrees that the scope of struct sockaddr_in is
 // global, and not in android::
@@ -36,7 +38,7 @@ struct sockaddr_in;
 
 namespace android {
 
-#if ALLWINNER
+#ifdef ALLWINNER
 
 /* add by Gary. start {{----------------------------------- */
 /**

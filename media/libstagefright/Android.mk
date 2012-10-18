@@ -129,11 +129,6 @@ LOCAL_SHARED_LIBRARIES := \
         libvorbisidec \
         libz \
 
-ifneq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_STATIC_LIBRARIES += \
-        libstagefright_httplive 
-endif
-
 LOCAL_STATIC_LIBRARIES := \
         libstagefright_color_conversion \
         libstagefright_aacenc \
@@ -141,6 +136,7 @@ LOCAL_STATIC_LIBRARIES := \
         libstagefright_timedtext \
         libvpx \
         libstagefright_mpeg2ts \
+        libstagefright_httplive \
         libstagefright_id3 \
         libFLAC \
 

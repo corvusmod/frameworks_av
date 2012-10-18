@@ -14,10 +14,9 @@ LOCAL_SRC_FILES:=               \
     MetadataRetrieverClient.cpp \
     TestPlayerStub.cpp          \
     MidiMetadataRetriever.cpp   \
+    MidiFile.cpp                \
     StagefrightPlayer.cpp       \
-    StagefrightRecorder.cpp	\
-    MidiFile.cpp                
-
+    StagefrightRecorder.cpp
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_SRC_FILES +=               \

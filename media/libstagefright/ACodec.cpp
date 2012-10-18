@@ -3239,7 +3239,7 @@ bool ACodec::LoadedState::onConfigureComponent(
     	&& strncmp("OMX.google.", mCodec->mComponentName.c_str(), 11) ){
 #else
     if (msg->findObject("native-window", &obj)
-            && (strncmp("OMX.google.", mCodec->mComponentName.c_str(), 11) || !strncmp("OMX.google.h264", mCodec->mComponentName.c_str(), 15))) {
+            && strncmp("OMX.google.", mCodec->mComponentName.c_str(), 11)) {
 #endif
         sp<NativeWindowWrapper> nativeWindow(
                 static_cast<NativeWindowWrapper *>(obj.get()));

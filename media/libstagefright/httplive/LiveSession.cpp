@@ -114,7 +114,7 @@ int64_t LiveSession::seekTo(int64_t timeUs) {
 }
 #else
 void LiveSession::seekTo(int64_t timeUs, int64_t* newSeekTime ) {
-Mutex::Autolock autoLock(mLock);
+    Mutex::Autolock autoLock(mLock);
     mSeeking = true;
 
     sp<AMessage> msg = new AMessage(kWhatSeek, id());
@@ -123,7 +123,7 @@ Mutex::Autolock autoLock(mLock);
 
     while (mSeeking) {
         mCondition.wait(mLock);
-	if( newSeekTime != NULL ) {
+        if( newSeekTime != NULL ) {
            *newSeekTime = mSeekTimeUs;
            ALOGV("new Seek Time %lld", mSeekTimeUs);
         }
