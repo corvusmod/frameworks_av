@@ -942,18 +942,14 @@ status_t status = OK;
 	}
 #else
     CHECK_GE(mOutputFd, 0);
+    status_t status = OK;
 #endif
 
     if (mWriter != NULL) {
         ALOGE("File writer is not avaialble");
         return UNKNOWN_ERROR;
     }
-#ifdef ALLWINNER
-#else
-    status_t status = OK;
-#endif
 
-    status_t status = OK;
 #if defined(QCOM_HARDWARE) && defined(QCOM_FM_ENABLED)
     if(AUDIO_SOURCE_FM_RX_A2DP == mAudioSource)
         return startFMA2DPWriter();

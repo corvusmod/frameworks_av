@@ -136,9 +136,10 @@ LOCAL_STATIC_LIBRARIES := \
         libstagefright_timedtext \
         libvpx \
         libstagefright_mpeg2ts \
-        libstagefright_httplive \
         libstagefright_id3 \
         libFLAC \
+
+# This is needed because if cedar is used a propietary lib is needed, if not it builds default httplive libs
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 	ifeq ($(CEDARX_DEBUG_FRAMEWORK),S)
@@ -147,6 +148,8 @@ ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 	LOCAL_LDFLAGS += \
 	$(CEDARX_TOP)/CedarAndroidLib/$(CEDARX_PREBUILD_LIB_PATH)/libstagefright_httplive_opt.a
 	endif
+else
+        LOCAL_STATIC_LIBRARIES += libstagefright_httplive
 endif
 
 ifeq ($(call is-vendor-board-platform,QCOM),true)

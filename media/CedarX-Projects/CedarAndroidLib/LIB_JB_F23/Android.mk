@@ -4,7 +4,7 @@ include $(CLEAR_VARS)
 
 include $(TOP)/frameworks/av/media/CedarX-Projects/Config.mk
 
-LOCAL_PREBUILT_LIBS := libcedarxosal.so libcedarv.so libcedarv_base.so libcedarv_adapter.so libve.so 
+LOCAL_PREBUILT_LIBS := libcedarxosal.so libcedarv.so libcedarv_base.so libcedarv_adapter.so libve.so
 LOCAL_PREBUILT_LIBS += libfacedetection.so
 LOCAL_PREBUILT_LIBS += libcedarxbase.so libaw_audio.so libaw_audioa.so libswdrm.so libstagefright_soft_cedar_h264dec.so librtmp.so
 
