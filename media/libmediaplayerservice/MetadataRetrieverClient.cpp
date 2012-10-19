@@ -38,7 +38,7 @@
 #include "MetadataRetrieverClient.h"
 #include "StagefrightMetadataRetriever.h"
 #ifdef ALLWINNER
-#include "CedarXMetadataRetriever.h"
+#include "AmlPlayerMetadataRetriever.h"
 #endif
 
 namespace android {
@@ -92,12 +92,19 @@ static sp<MediaMetadataRetrieverBase> createRetriever(player_type playerType)
 {
     sp<MediaMetadataRetrieverBase> p;
     switch (playerType) {
-#ifdef ALLWINNER
-		case CEDARX_PLAYER:
-    	case CEDARA_PLAYER:
-            p = new CedarXMetadataRetriever;
-            break;
-#endif
+	 case AMSUPER_PLAYER:
+	 case AMLOGIC_PLAYER:
+	 {
+	     char value[PROPERTY_VALUE_MAX];
+			
+	     property_get("media.amplayer.thumbnail",value,"false");
+			
+	     if((!strcmp(value, "1") || !strcmp(value, "true")))
+	         p = new AmlPlayerMetadataRetriever;
+	     else
+	         p = new StagefrightMetadataRetriever;;
+	     break;
+	 }
         case STAGEFRIGHT_PLAYER:
         case NU_PLAYER:
         {
