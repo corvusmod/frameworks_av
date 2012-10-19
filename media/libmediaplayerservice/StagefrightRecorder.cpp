@@ -92,7 +92,6 @@ StagefrightRecorder::StagefrightRecorder()
 StagefrightRecorder::StagefrightRecorder()
     : mWriter(NULL),
       mOutputFd(-1),
-	  mOutputPath(NULL),
       mAudioSource(AUDIO_SOURCE_CNT),
       mVideoSource(VIDEO_SOURCE_LIST_END),
       mStarted(false), mSurfaceMediaSource(NULL) {
@@ -948,10 +947,6 @@ status_t status = OK;
         ALOGE("File writer is not avaialble");
         return UNKNOWN_ERROR;
     }
-#ifdef ALLWINNER
-#else
-    status_t status = OK;
-#endif
 
     status_t status = OK;
 #if defined(QCOM_HARDWARE) && defined(QCOM_FM_ENABLED)
