@@ -92,7 +92,6 @@ StagefrightRecorder::StagefrightRecorder()
 StagefrightRecorder::StagefrightRecorder()
     : mWriter(NULL),
       mOutputFd(-1),
-	  mOutputPath(NULL),
       mAudioSource(AUDIO_SOURCE_CNT),
       mVideoSource(VIDEO_SOURCE_LIST_END),
       mStarted(false), mSurfaceMediaSource(NULL) {
