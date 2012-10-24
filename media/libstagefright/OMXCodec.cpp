@@ -2332,6 +2332,9 @@ status_t OMXCodec::allocateOutputBuffersFromNativeWindow() {
         info.mMem = NULL;
         info.mMediaBuffer = new MediaBuffer(graphicBuffer);
         info.mMediaBuffer->setObserver(this);
+#ifdef ALLWINNER
+        mPortBuffers[kPortIndexOutput].push(info);
+#endif
 
         IOMX::buffer_id bufferId;
         err = mOMX->useGraphicBuffer(mNode, kPortIndexOutput, graphicBuffer,
@@ -3952,9 +3955,26 @@ status_t OMXCodec::waitForBufferFilled_l() {
     }
     status_t err = mBufferFilled.waitRelative(mLock, kBufferFilledEventTimeOutNs);
     if (err != OK) {
-        CODEC_LOGE("Timed out waiting for output buffers: %d/%d",
+#ifdef ALLWINNER
+    if(countBuffersWeOwn(mPortBuffers[kPortIndexOutput]) > 0) {
+ 	 3816	
+//        CODEC_LOGI("Warnning Timed out waiting for output buffers: %d/%d",
+//        countBuffersWeOwn(mPortBuffers[kPortIndexInput]),
+//        countBuffersWeOwn(mPortBuffers[kPortIndexOutput]));
+        return OK;
+      }
+      else {
+       CODEC_LOGE("Timed out waiting for output buffers: %d/%d",
             countBuffersWeOwn(mPortBuffers[kPortIndexInput]),
             countBuffersWeOwn(mPortBuffers[kPortIndexOutput]));
+      }
+
+#else
+       CODEC_LOGE("Timed out waiting for output buffers: %d/%d",
+            countBuffersWeOwn(mPortBuffers[kPortIndexInput]),
+            countBuffersWeOwn(mPortBuffers[kPortIndexOutput]));
+
+#endif
     }
     return err;
 }

@@ -38,26 +38,66 @@ StagefrightMediaScanner::StagefrightMediaScanner() {}
 StagefrightMediaScanner::~StagefrightMediaScanner() {}
 
 static bool FileHasAcceptableExtension(const char *extension) {
+#ifdef ALLWINNER
+    static const char *kValidExtensions[] = {
+        ".mp3", ".mp4", ".m4a", ".3gp", ".3gpp", ".3g2", ".3gpp2",
+        ".mpeg", ".ogg", ".mid", ".smf", ".imy", ".wma", ".aac",
+        ".wav", ".amr", ".midi", ".xmf", ".rtttl", ".rtx", ".ota",
+        ".mka", ".fl", ".flac", ".mxmf",
+        ".mpg", ".mpeg",
+#else
     static const char *kValidExtensions[] = {
         ".mp3", ".mp4", ".m4a", ".3gp", ".3gpp", ".3g2", ".3gpp2",
         ".mpeg", ".ogg", ".mid", ".smf", ".imy", ".wma", ".aac",
         ".wav", ".amr", ".midi", ".xmf", ".rtttl", ".rtx", ".ota",
         ".mkv", ".mka", ".webm", ".ts", ".fl", ".flac", ".mxmf",
         ".avi", ".mpg", ".qcp", ".awb", ".ac3", ".dts", ".wmv",
+#endif
 #ifdef QCOM_HARDWARE
         ".ec3"
 #endif
     };
+
+#ifdef ALLWINNER
+    static const char *kValidExtensionsAW[] = {
+       ".mkv", ".rmvb", ".rm", ".mov", ".flv", ".f4v", ".avi",
+       ".mp1", ".mp2", ".awb", ".oga", ".ape", ".ac3",
+       ".dts", ".omg", ".oma", ".midi", ".m4v", ".wmv", ".asf",
+       ".vob", ".pmp", ".m4r", ".ra", ".webm",
+       ".ts",".m2ts"
+    };
+
+    size_t kNumValidExtensions;
+
+    kNumValidExtensions =
+#else
     static const size_t kNumValidExtensions =
+#endif
         sizeof(kValidExtensions) / sizeof(kValidExtensions[0]);
 
     for (size_t i = 0; i < kNumValidExtensions; ++i) {
         if (!strcasecmp(extension, kValidExtensions[i])) {
+#ifdef ALLWINNER
+            return 1;
+#else
             return true;
+#endif
         }
     }
+#ifdef ALLWINNER
+    kNumValidExtensions =
+            sizeof(kValidExtensionsAW) / sizeof(kValidExtensionsAW[0]);
 
+    for (size_t i = 0; i < kNumValidExtensions; ++i) {
+    if (!strcasecmp(extension, kValidExtensionsAW[i])) {
+      return 2;
+    }
+  }
+
+    return 0;
+#else
     return false;
+#endif
 }
 
 static MediaScanResult HandleMIDI(
@@ -124,12 +164,20 @@ MediaScanResult StagefrightMediaScanner::processFileInternal(
         const char *path, const char *mimeType,
         MediaScannerClient &client) {
     const char *extension = strrchr(path, '.');
+#ifdef ALLWINNER
+    int faccext_ret;
+#endif
 
     if (!extension) {
         return MEDIA_SCAN_RESULT_SKIPPED;
     }
 
+#ifdef ALLWINNER
+    faccext_ret = FileHasAcceptableExtension(extension);
+    if (!faccext_ret) {
+#else
     if (!FileHasAcceptableExtension(extension)) {
+#endif
         return MEDIA_SCAN_RESULT_SKIPPED;
     }
 
@@ -145,8 +193,17 @@ MediaScanResult StagefrightMediaScanner::processFileInternal(
         return HandleMIDI(path, &client);
     }
 
+#ifdef ALLWINNER
+    status_t status;
+     sp<MediaMetadataRetriever> mRetriever(new MediaMetadataRetriever);
+ 
+    if(faccext_ret == 2) { //aw media scanner
+      status = mRetriever->setDataSource(path);
+    }
+    else {
+#else
     sp<MediaMetadataRetriever> mRetriever(new MediaMetadataRetriever);
-
+#endif
     int fd = open(path, O_RDONLY | O_LARGEFILE);
     status_t status;
     if (fd < 0) {
@@ -204,6 +261,9 @@ MediaScanResult StagefrightMediaScanner::processFileInternal(
     }
 
     return MEDIA_SCAN_RESULT_OK;
+#ifdef ALLWINNER
+}
+#endif
 }
 
 char *StagefrightMediaScanner::extractAlbumArt(int fd) {

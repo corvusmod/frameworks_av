@@ -29,11 +29,23 @@
 #include <media/AudioSystem.h>
 #include <media/Metadata.h>
 
+#ifdef ALLWINNER
+#include "mediaplayerinfo.h"
+#endif
+
 // Fwd decl to make sure everyone agrees that the scope of struct sockaddr_in is
 // global, and not in android::
 struct sockaddr_in;
 
 namespace android {
+
+#ifdef ALLWINNER
+/**
+*  screen name
+*/
+#define MASTER_SCREEN        0
+#define SLAVE_SCREEN         1
+#endif
 
 class Parcel;
 class Surface;
@@ -50,10 +62,26 @@ enum player_type {
     // The shared library with the test player is passed passed as an
     // argument to the 'test:' url in the setDataSource call.
     TEST_PLAYER = 5,
+#ifdef ALLWINNER
+    CEDARX_PLAYER = 8,
+    CEDARA_PLAYER = 9,
+#endif
 
     AAH_RX_PLAYER = 100,
     AAH_TX_PLAYER = 101,
 };
+
+#ifdef ALLWINNER
+enum player_states {
+  PLAYER_STATE_UNKOWN = 0,
+  PLAYER_STATE_PREPARED,
+  PLAYER_STATE_PAUSE,
+  PLAYER_STATE_PLAYING,
+  PLAYER_STATE_SEEKING,
+  PLAYER_STATE_SUSPEND,
+  PLAYER_STATE_RESUME,
+};
+#endif
 
 
 #define DEFAULT_AUDIOSINK_BUFFERCOUNT 4
@@ -201,6 +229,221 @@ public:
     virtual status_t dump(int fd, const Vector<String16> &args) const {
         return INVALID_OPERATION;
     }
+
+#ifdef ALLWINNER
+    virtual status_t    setScreen(int screen){
+        return OK;
+    };
+    virtual int    		getMeidaPlayerState(){
+        return PLAYER_STATE_UNKOWN;
+    };
+    virtual int getSubCount()
+    {
+        return 0;
+    }
+    
+    virtual int getSubList(MediaPlayer_SubInfo *infoList, int count)
+    {
+        return 0;
+    }
+    
+    virtual int getCurSub()
+    {
+        return -1;
+    }
+    
+    virtual status_t switchSub(int index)
+    {
+        return OK;
+    }
+    
+    virtual status_t setSubGate(bool showSub)
+    {
+        return OK;
+    }
+    
+    virtual bool getSubGate()
+    {
+        return true;
+    }
+    
+    virtual status_t setSubColor(int color)
+    {
+        return OK;
+    }
+    
+    virtual int getSubColor()
+    {
+        return 0xFFFFFFFF;
+    }
+    
+    virtual status_t setSubFrameColor(int color)
+    {
+        return OK;
+    }
+    
+    virtual int getSubFrameColor()
+    {
+        return 0xFFFFFFFF;
+    }
+    
+    virtual status_t setSubFontSize(int size)
+    {
+        return OK;
+    }
+    
+    virtual int getSubFontSize()
+    {
+        return -1;
+    }
+    
+    virtual status_t setSubCharset(const char *charset)
+    {
+        return OK;
+    }
+    
+    virtual status_t getSubCharset(char *charset)
+    {
+        return OK;
+    }
+    
+    virtual status_t setSubPosition(int percent)
+    {
+        return OK;
+    }
+    
+    virtual int getSubPosition()
+    {
+        return -1;
+    }
+    
+    virtual status_t setSubDelay(int time)
+    {
+        return OK;
+    }
+    
+    virtual int getSubDelay()
+    {
+        return -1;
+    }
+    
+    virtual int getTrackCount()
+    {
+        return 0;
+    }
+    
+    virtual int getTrackList(MediaPlayer_TrackInfo *infoList, int count)
+    {
+        return 0;
+    }
+    
+    virtual int getCurTrack()
+    {
+        return -1;
+    }
+    
+    virtual status_t switchTrack(int index)
+    {
+        return OK;
+    }
+
+    virtual status_t setInputDimensionType(int type)
+    {
+        return -1;
+    }
+
+    virtual int getInputDimensionType()
+    {
+        return -1;
+    }
+
+    virtual status_t setOutputDimensionType(int type)
+    {
+        return -1;
+    }
+
+    virtual int getOutputDimensionType()
+    {
+        return -1;
+    }
+
+    virtual status_t setAnaglaghType(int type)
+    {
+        return -1;
+    }
+
+    virtual int getAnaglaghType()
+    {
+        return -1;
+    }
+
+    virtual status_t getVideoEncode(char *encode)
+    {
+        return -1;
+    }
+
+    virtual int getVideoFrameRate()
+    {
+        return -1;
+    }
+
+    virtual status_t getAudioEncode(char *encode)
+    {
+        return -1;
+    }
+
+    virtual int getAudioBitRate()
+    {
+        return -1;
+    }
+
+    virtual int getAudioSampleRate()
+    {
+        return -1;
+    }
+    virtual status_t enableScaleMode(bool enable, int width, int height)
+    {
+        return -1;
+    }
+    virtual status_t setVppGate(bool enableVpp)
+    {
+        return OK;
+    }
+    virtual status_t setLumaSharp(int value)
+    {
+        return OK;
+    }
+    virtual status_t setChromaSharp(int value)
+    {
+        return OK;
+    }
+    virtual status_t setWhiteExtend(int value)
+    {
+        return OK;
+    }
+    virtual status_t setBlackExtend(int value)
+    {
+        return OK;
+    }
+
+    virtual status_t extensionControl(int command, int para0, int para1)
+    {
+        return OK;
+    }
+    virtual status_t setChannelMuteMode(int muteMode)
+    {
+        return OK;
+    };
+    
+    virtual int getChannelMuteMode()
+    {
+        return -1;
+    };
+    virtual status_t generalInterface(int cmd, int int1, int int2, int int3, void *p)
+    {
+        return OK;
+    }
+#endif
 
 private:
     friend class MediaPlayerService;

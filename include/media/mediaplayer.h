@@ -28,12 +28,20 @@
 #include <utils/KeyedVector.h>
 #include <utils/String8.h>
 
+#ifdef ALLWINNER
+#include "mediaplayerinfo.h"
+#endif
+
 class ANativeWindow;
 
 namespace android {
 
 class Surface;
 class ISurfaceTexture;
+
+#ifdef ALLWINNER
+#define DLNA_SOURCE_DETECTOR "com.softwinner.dlnasourcedetector"
+#endif
 
 enum media_event_type {
     MEDIA_NOP               = 0, // interface test message
@@ -45,6 +53,9 @@ enum media_event_type {
     MEDIA_TIMED_TEXT        = 99,
     MEDIA_ERROR             = 100,
     MEDIA_INFO              = 200,
+#ifdef ALLWINNER
+    MEDIA_SOURCE_DETECTED  = 234,
+#endif
 };
 
 // Generic error codes for the media player framework.  Errors are fatal, the
@@ -125,6 +136,13 @@ enum media_info_type {
     MEDIA_INFO_TIMED_TEXT_ERROR = 900,
 };
 
+#ifdef ALLWINNER
+/**
+*  screen name
+*/
+#define MASTER_SCREEN        0
+#define SLAVE_SCREEN         1
+#endif
 
 
 enum media_player_states {
@@ -229,6 +247,61 @@ public:
             status_t        getParameter(int key, Parcel* reply);
             status_t        setRetransmitEndpoint(const char* addrString, uint16_t port);
             status_t        setNextMediaPlayer(const sp<MediaPlayer>& player);
+#ifdef ALLWINNER
+            static  status_t        setScreen(int screen);
+            static  status_t        getScreen(int *screen);
+            static  status_t        isPlayingVideo(bool *playing);
+            int             getSubCount();
+            int             getSubList(MediaPlayer_SubInfo *infoList, int count);
+            int             getCurSub();
+            status_t        switchSub(int index);
+            status_t        setSubGate(bool showSub);
+            bool            getSubGate();
+            status_t        setSubColor(int color);
+            int             getSubColor();
+            status_t        setSubFrameColor(int color);
+            int             getSubFrameColor();
+            status_t        setSubFontSize(int size);
+            int             getSubFontSize();
+            status_t        setSubCharset(const char *charset);
+            status_t        getSubCharset(char *charset);
+            status_t        setSubPosition(int percent);
+            int             getSubPosition();
+            status_t        setSubDelay(int time);
+            int             getSubDelay();
+            int             getTrackCount();
+            int             getTrackList(MediaPlayer_TrackInfo *infoList, int count);
+            int             getCurTrack();
+            status_t        switchTrack(int index);
+            status_t        setInputDimensionType(int type);
+            int             getInputDimensionType();
+            status_t        setOutputDimensionType(int type);
+            int             getOutputDimensionType();
+            status_t        setAnaglaghType(int type);
+            int             getAnaglaghType();
+            status_t        getVideoEncode(char *encode);
+            int             getVideoFrameRate();
+            status_t        getAudioEncode(char *encode);
+            int             getAudioBitRate();
+            int             getAudioSampleRate();
+            status_t        enableScaleMode(bool enable, int width, int height);
+            static  status_t        setVppGate(bool enableVpp);
+            static  bool            getVppGate();
+            static  status_t        setLumaSharp(int value);
+            static  int             getLumaSharp();
+            static  status_t        setChromaSharp(int value);
+            static  int             getChromaSharp();
+            static  status_t        setWhiteExtend(int value);
+            static  int             getWhiteExtend();
+            static  status_t        setBlackExtend(int value);
+            static  int             getBlackExtend();
+            status_t        setChannelMuteMode(int muteMode);
+            int             getChannelMuteMode();
+            static  status_t        setGlobalSubGate(bool showSub);
+            static  bool            getGlobalSubGate();
+            status_t        generalInterface(int cmd, int int1, int int2, int int3, void *p);
+            static  status_t        generalGlobalInterface(int cmd, int int1, int int2, int int3, void *p);
+#endif
 
 private:
             void            clear_l();
@@ -262,6 +335,18 @@ private:
     float                       mSendLevel;
     struct sockaddr_in          mRetransmitEndpoint;
     bool                        mRetransmitEndpointValid;
+#ifdef ALLWINNER
+    bool                        mSubGate;
+    int                         mSubColor;
+    int                         mSubFrameColor;
+    int                         mSubPosition;
+    int                         mSubDelay;
+    int                         mSubFontSize;
+    char                        mSubCharset[MEDIAPLAYER_NAME_LEN_MAX];
+    int                         mSubIndex;
+    int                         mTrackIndex;
+    int                         mMuteMode;
+#endif
 };
 
 }; // namespace android

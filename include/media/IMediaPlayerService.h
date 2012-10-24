@@ -36,6 +36,14 @@ class IMediaRecorder;
 class IOMX;
 struct IStreamSource;
 
+#ifdef ALLWINNER
+/**
+*  screen name
+*/
+#define MASTER_SCREEN        0
+#define SLAVE_SCREEN         1
+#endif
+
 class IMediaPlayerService: public IInterface
 {
 public:
@@ -73,6 +81,25 @@ public:
 
     virtual void addBatteryData(uint32_t params) = 0;
     virtual status_t pullBatteryData(Parcel* reply) = 0;
+
+#ifdef ALLWINNER
+    virtual status_t        setScreen(int screen) = 0;
+    virtual status_t        getScreen(int *screen) = 0;
+    virtual status_t        isPlayingVideo(int *playing) = 0;
+    virtual status_t        setVppGate(bool enableVpp) = 0;
+    virtual bool            getVppGate() = 0;
+    virtual status_t        setLumaSharp(int value) = 0;
+    virtual int             getLumaSharp() = 0;
+    virtual status_t        setChromaSharp(int value) = 0;
+    virtual int             getChromaSharp() = 0;
+    virtual status_t        setWhiteExtend(int value) = 0;
+    virtual int             getWhiteExtend() = 0;
+    virtual status_t        setBlackExtend(int value) = 0;
+    virtual int             getBlackExtend() = 0;
+    virtual status_t        setGlobalSubGate(bool showSub) = 0;
+    virtual bool            getGlobalSubGate() = 0;
+    virtual status_t        generalGlobalInterface(int cmd, int int1, int int2, int int3, void *p) = 0;
+#endif
 };
 
 // ----------------------------------------------------------------------------

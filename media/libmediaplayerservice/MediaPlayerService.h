@@ -303,6 +303,25 @@ public:
     virtual void                addBatteryData(uint32_t params);
     // API for the Battery app to pull the data of codecs usage
     virtual status_t            pullBatteryData(Parcel* reply);
+
+#ifdef ALLWINNER
+    virtual status_t            setScreen(int screen);
+    virtual status_t            getScreen(int *screen);
+    virtual status_t            isPlayingVideo(int *playing);
+    virtual status_t            setVppGate(bool enableVpp);
+    virtual bool                getVppGate();
+    virtual status_t            setLumaSharp(int value);
+    virtual int                 getLumaSharp();
+    virtual status_t            setChromaSharp(int value);
+    virtual int                 getChromaSharp();
+    virtual status_t            setWhiteExtend(int value);
+    virtual int                 getWhiteExtend();
+    virtual status_t            setBlackExtend(int value);
+    virtual int                 getBlackExtend();
+    virtual status_t            setGlobalSubGate(bool showSub);
+    virtual bool                getGlobalSubGate();
+    virtual status_t            generalGlobalInterface(int cmd, int int1, int int2, int int3, void *p);
+#endif
 private:
 
     class Client : public BnMediaPlayer {
@@ -334,6 +353,54 @@ private:
         virtual status_t        getParameter(int key, Parcel *reply);
         virtual status_t        setRetransmitEndpoint(const struct sockaddr_in* endpoint);
         virtual status_t        setNextPlayer(const sp<IMediaPlayer>& player);
+
+#ifdef ALLWINNER
+        virtual status_t        setScreen(int screen);
+        virtual status_t        isPlayingVideo(int *playing);
+        virtual int             getSubCount();
+        virtual int             getSubList(MediaPlayer_SubInfo *infoList, int count);
+        virtual int             getCurSub();
+        virtual status_t        switchSub(int index);
+        virtual status_t        setSubGate(bool showSub);
+        virtual bool            getSubGate();
+        virtual status_t        setSubColor(int color);
+        virtual int             getSubColor();
+        virtual status_t        setSubFrameColor(int color);
+        virtual int             getSubFrameColor();
+        virtual status_t        setSubFontSize(int size);
+        virtual int             getSubFontSize();
+        virtual status_t        setSubCharset(const char *charset);
+        virtual status_t        getSubCharset(char *charset);
+        virtual status_t        setSubPosition(int percent);
+        virtual int             getSubPosition();
+        virtual status_t        setSubDelay(int time);
+        virtual int             getSubDelay();
+        virtual int             getTrackCount();
+        virtual int             getTrackList(MediaPlayer_TrackInfo *infoList, int count);
+        virtual int             getCurTrack();
+        virtual status_t        switchTrack(int index);
+        virtual status_t        setInputDimensionType(int type);
+        virtual int             getInputDimensionType();
+        virtual status_t        setOutputDimensionType(int type);
+        virtual int             getOutputDimensionType();
+        virtual status_t        setAnaglaghType(int type);
+        virtual int             getAnaglaghType();
+        virtual status_t        getVideoEncode(char *encode);
+        virtual int             getVideoFrameRate();
+        virtual status_t        getAudioEncode(char *encode);
+        virtual int             getAudioBitRate();
+        virtual int             getAudioSampleRate();
+        virtual status_t        enableScaleMode(bool enable, int width, int height);
+        virtual status_t        setVppGate(bool enableVpp);
+        virtual status_t        setLumaSharp(int value);
+        virtual status_t        setChromaSharp(int value);
+        virtual status_t        setWhiteExtend(int value);
+        virtual status_t        setBlackExtend(int value);
+        virtual status_t        setChannelMuteMode(int muteMode);
+        virtual int             getChannelMuteMode();
+        virtual status_t        generalInterface(int cmd, int int1, int int2, int int3, void *p);
+        virtual status_t        setDataSource(const sp<IStreamSource> &source, int type);
+#endif
 
         sp<MediaPlayerBase>     createPlayer(player_type playerType);
 
@@ -408,6 +475,29 @@ private:
                     bool                        mRetransmitEndpointValid;
                     sp<Client>                  mNextClient;
 
+#ifdef ALLWINNER
+                    int                         mHasSurface;
+                    bool                        mSubGate;
+                    int                         mSubColor;
+                    int                         mSubFrameColor;
+                    int                         mSubPosition;
+                    int                         mSubDelay;
+                    int                         mSubFontSize;
+                    char                        mSubCharset[MEDIAPLAYER_NAME_LEN_MAX];
+					int                         mSubIndex;
+				    int                         mTrackIndex;
+                    int                         mMuteMode;   // 2012-03-07, set audio channel mute
+                    bool                        mEnableScaleMode;
+                    int                         mScaleWidth;
+                    int                         mScaleHeight;
+                    int                         mScreen;
+                    bool                        mVppGate;
+                    int                         mLumaSharp;
+                    int                         mChromaSharp;
+                    int                         mWhiteExtend;
+                    int                         mBlackExtend;
+#endif
+
         // Metadata filters.
         media::Metadata::Filter mMetadataAllow;  // protected by mLock
         media::Metadata::Filter mMetadataDrop;  // protected by mLock
@@ -434,6 +524,16 @@ private:
                 int32_t                     mNextConnId;
                 sp<IOMX>                    mOMX;
                 sp<ICrypto>                 mCrypto;
+#ifdef ALLWINNER
+                int                         mScreen;
+                bool                        mVppGate;
+                int                         mLumaSharp;
+                int                         mChromaSharp;
+                int                         mWhiteExtend;
+                int                         mBlackExtend;
+                bool                        mGlobalSubGate;
+		wp<Client> mDetectClient;
+#endif
 };
 
 // ----------------------------------------------------------------------------

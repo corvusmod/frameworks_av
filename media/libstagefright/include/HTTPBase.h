@@ -23,12 +23,21 @@
 #include <media/stagefright/MediaErrors.h>
 #include <utils/threads.h>
 
+#ifdef ALLWINNER
+#include <media/stagefright/foundation/AString.h>
+#endif
+
 namespace android {
 
 struct HTTPBase : public DataSource {
     enum Flags {
         // Don't log any URLs.
+#ifdef ALLWINNER
+        kFlagIncognito = 1,
+        kFlagUAIPAD  = 256
+#else
         kFlagIncognito = 1
+#endif
     };
 
     HTTPBase();
@@ -55,6 +64,33 @@ struct HTTPBase : public DataSource {
 
     static void RegisterSocketUserTag(int sockfd, uid_t uid, uint32_t kTag);
     static void UnRegisterSocketUserTag(int sockfd);
+
+#ifdef ALLWINNER
+virtual AString getRedirectUri()
+    {
+      return AString("");
+    }
+
+    virtual bool isRedirected()
+    {
+      return false;
+    }
+
+    virtual void setRedirectHost(const char* host)
+    {
+      return;
+    }
+
+    virtual void setRedirectPort(const char* port)
+    {
+      return;
+    }
+
+    virtual void setRedirectPath(const char* path)
+    {
+      return;
+    }
+#endif
 
 protected:
     void addBandwidthMeasurement(size_t numBytes, int64_t delayUs);

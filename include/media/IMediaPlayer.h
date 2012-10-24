@@ -23,6 +23,10 @@
 #include <utils/KeyedVector.h>
 #include <system/audio.h>
 
+#ifdef ALLWINNER
+#include "mediaplayerinfo.h"
+#endif
+
 // Fwd decl to make sure everyone agrees that the scope of struct sockaddr_in is
 // global, and not in android::
 struct sockaddr_in;
@@ -95,6 +99,46 @@ public:
     virtual status_t        getMetadata(bool update_only,
                                         bool apply_filter,
                                         Parcel *metadata) = 0;
+#ifdef ALLWINNER
+    virtual status_t        setDataSource(const sp<IStreamSource>& source, int type) = 0;
+    virtual int             getSubCount() = 0;
+    virtual int             getSubList(MediaPlayer_SubInfo *infoList, int count) = 0;
+    virtual int             getCurSub() = 0;
+    virtual status_t        switchSub(int index) = 0;
+    virtual status_t        setSubGate(bool showSub) = 0;
+    virtual bool            getSubGate() = 0;
+    virtual status_t        setSubColor(int color) = 0;
+    virtual int             getSubColor() = 0;
+    virtual status_t        setSubFrameColor(int color) = 0;
+    virtual int             getSubFrameColor() = 0;
+    virtual status_t        setSubFontSize(int size) = 0;
+    virtual int             getSubFontSize() = 0;
+    virtual status_t        setSubCharset(const char *charset) = 0;
+    virtual status_t        getSubCharset(char *charset) = 0;
+    virtual status_t        setSubPosition(int percent) = 0;
+    virtual int             getSubPosition() = 0;
+    virtual status_t        setSubDelay(int time) = 0;
+    virtual int             getSubDelay() = 0;
+    virtual int             getTrackCount() = 0;
+    virtual int             getTrackList(MediaPlayer_TrackInfo *infoList, int count) = 0;
+    virtual int             getCurTrack() = 0;
+    virtual status_t        switchTrack(int index) = 0;
+    virtual status_t        setInputDimensionType(int type) = 0;
+    virtual int             getInputDimensionType() = 0;
+    virtual status_t        setOutputDimensionType(int type) = 0;
+    virtual int             getOutputDimensionType() = 0;
+    virtual status_t        setAnaglaghType(int type) = 0;
+    virtual int             getAnaglaghType() = 0;
+    virtual status_t        getVideoEncode(char *encode) = 0;
+    virtual int             getVideoFrameRate() = 0;
+    virtual status_t        getAudioEncode(char *encode) = 0;
+    virtual int             getAudioBitRate() = 0;
+    virtual int             getAudioSampleRate() = 0;
+    virtual status_t        enableScaleMode(bool enable, int width, int height) = 0;
+    virtual status_t        setChannelMuteMode(int muteMode) = 0;
+    virtual int             getChannelMuteMode() = 0;
+    virtual status_t        generalInterface(int cmd, int int1, int int2, int int3, void *p) = 0;
+#endif
 };
 
 // ----------------------------------------------------------------------------

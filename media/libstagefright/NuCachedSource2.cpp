@@ -561,9 +561,15 @@ ssize_t NuCachedSource2::readInternal(off64_t offset, void *data, size_t size) {
         (new AMessage(kWhatFetchMore, mReflector->id()))->post();
     }
 #endif
+#ifdef ALLWINNER
+    if (offset < mCacheOffset
+            || offset >= (off64_t)(mCacheOffset + mCache->totalSize())) {
+        static const off64_t kPadding = 0;
+#else
     if (offset < mCacheOffset
             || offset >= (off64_t)(mCacheOffset + mCache->totalSize())) {
         static const off64_t kPadding = 256 * 1024;
+#endif
 
         // In the presence of multiple decoded streams, once of them will
         // trigger this seek request, the other one will request data "nearby"
@@ -617,8 +623,15 @@ status_t NuCachedSource2::seekInternal_l(off64_t offset) {
 
     size_t totalSize = mCache->totalSize();
     CHECK_EQ(mCache->releaseFromStart(totalSize), totalSize);
-
+#ifdef ALLWINNER
+    if(mFinalStatus < 0) {
+         mForceReconnect = true;
+    }
     mNumRetriesLeft = kMaxNumRetries;
+    mFinalStatus = OK;
+#else
+    mNumRetriesLeft = kMaxNumRetries;
+#endif
     mFetching = true;
 
     return OK;

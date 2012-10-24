@@ -38,10 +38,17 @@
 #include "MetadataRetrieverClient.h"
 #include "StagefrightMetadataRetriever.h"
 
-namespace android {
+#ifdef ALLWINNER
+#include "CedarXMetadataRetriever.h"
+#endif
 
+namespace android {
 extern player_type getPlayerType(const char* url);
+#ifdef ALLWINNER
+extern player_type getPlayerType(int fd, int64_t offset, int64_t length, bool check_cedar);
+#else
 extern player_type getPlayerType(int fd, int64_t offset, int64_t length);
+#endif
 
 MetadataRetrieverClient::MetadataRetrieverClient(pid_t pid)
 {
@@ -85,6 +92,12 @@ static sp<MediaMetadataRetrieverBase> createRetriever(player_type playerType)
 {
     sp<MediaMetadataRetrieverBase> p;
     switch (playerType) {
+#ifdef ALLWINNER
+        case CEDARX_PLAYER:
+        case CEDARA_PLAYER:
+            p = new CedarXMetadataRetriever;
+            break;
+#endif
         case STAGEFRIGHT_PLAYER:
         case NU_PLAYER:
         {
@@ -150,7 +163,11 @@ status_t MetadataRetrieverClient::setDataSource(int fd, int64_t offset, int64_t 
         ALOGV("calculated length = %lld", length);
     }
 
+#ifdef ALLWINNER
+player_type playerType = getPlayerType(fd, offset, length, false);
+#else
     player_type playerType = getPlayerType(fd, offset, length);
+#endif
     ALOGV("player type = %d", playerType);
     sp<MediaMetadataRetrieverBase> p = createRetriever(playerType);
     if (p == NULL) {
