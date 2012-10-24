@@ -129,7 +129,6 @@ OMX_ERRORTYPE SimpleSoftOMXComponent::getExtensionIndex(
         const char *name, OMX_INDEXTYPE *index) {
 
   OMX_ERRORTYPE ret = OMX_ErrorUndefined;
-	 128	
   ALOGV("getExtensionIndex:%s",name);
      if (strcmp(name, ANDROID_INDEX_PARAM_ENABLE_ANB) == 0) {
         *index = (OMX_INDEXTYPE)OMX_IndexParamEnableAndroidBuffers;

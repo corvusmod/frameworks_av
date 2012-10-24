@@ -3957,7 +3957,6 @@ status_t OMXCodec::waitForBufferFilled_l() {
     if (err != OK) {
 #ifdef ALLWINNER
     if(countBuffersWeOwn(mPortBuffers[kPortIndexOutput]) > 0) {
- 	 3816	
 //        CODEC_LOGI("Warnning Timed out waiting for output buffers: %d/%d",
 //        countBuffersWeOwn(mPortBuffers[kPortIndexInput]),
 //        countBuffersWeOwn(mPortBuffers[kPortIndexOutput]));

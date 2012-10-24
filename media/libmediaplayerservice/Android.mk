@@ -22,7 +22,7 @@ LOCAL_SRC_FILES:=               \
     StagefrightPlayer.cpp       \
     StagefrightRecorder.cpp
 
-ifneq ($(TARGET_BOARD_PLATFORM),exDroid)
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_SRC_FILES+= \
     CedarPlayer.cpp           \
     CedarAPlayerWrapper.cpp    \
@@ -46,7 +46,7 @@ LOCAL_SHARED_LIBRARIES :=     		\
 	libdl                           \
 	libaah_rtp
 
-ifneq ($(TARGET_BOARD_PLATFORM),exDroid)
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_SHARED_LIBRARIES += \
         libCedarX                 \
         libCedarA
@@ -64,7 +64,7 @@ LOCAL_C_INCLUDES :=                                               \
 	$(TOP)/frameworks/native/include/media/openmax                  \
 	$(TOP)/external/tremolo/Tremolo                                 \
 
-ifneq ($(TARGET_BOARD_PLATFORM),exDroid)
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_C_INCLUDES +=  \
         $(TOP)/external/cedarx/CedarXAndroid/IceCreamSandwich \
         $(TOP)/external/cedarx/CedarX/include/include_audio \
@@ -74,7 +74,7 @@ LOCAL_C_INCLUDES +=  \
         $(TOP)/external/cedarx/CedarA/include 
 endif
 
-ifneq ($(TARGET_BOARD_PLATFORM),exDroid)
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_CFLAGS +=-DCEDARX_ANDROID_VERSION=7
 endif
 

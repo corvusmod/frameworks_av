@@ -175,11 +175,13 @@ MediaScanResult StagefrightMediaScanner::processFileInternal(
 #ifdef ALLWINNER
     faccext_ret = FileHasAcceptableExtension(extension);
     if (!faccext_ret) {
-#else
-    if (!FileHasAcceptableExtension(extension)) {
-#endif
         return MEDIA_SCAN_RESULT_SKIPPED;
     }
+#else
+    if (!FileHasAcceptableExtension(extension)) {
+        return MEDIA_SCAN_RESULT_SKIPPED;
+    }
+#endif
 
     if (!strcasecmp(extension, ".mid")
             || !strcasecmp(extension, ".smf")
@@ -195,15 +197,75 @@ MediaScanResult StagefrightMediaScanner::processFileInternal(
 
 #ifdef ALLWINNER
     status_t status;
-     sp<MediaMetadataRetriever> mRetriever(new MediaMetadataRetriever);
+    sp<MediaMetadataRetriever> mRetriever(new MediaMetadataRetriever);
  
     if(faccext_ret == 2) { //aw media scanner
       status = mRetriever->setDataSource(path);
+    } else {
+    	int fd = open(path, O_RDONLY | O_LARGEFILE);
+	status_t status;
+	if (fd < 0) {
+        // couldn't open it locally, maybe the media server can?
+        	status = mRetriever->setDataSource(path);
+	} else {
+	        status = mRetriever->setDataSource(fd, 0, 0x7ffffffffffffffL);
+        	close(fd);
+	}
+
+	if (status) {
+        	return MEDIA_SCAN_RESULT_ERROR;
+        }
+
+        const char *value;
+        if ((value = mRetriever->extractMetadata(
+                    METADATA_KEY_MIMETYPE)) != NULL) {
+            status = client.setMimeType(value);
+            if (status) {
+                 return MEDIA_SCAN_RESULT_ERROR;
+            }
+        }
+
+        struct KeyMap {
+            const char *tag;
+            int key;
+        };
+    
+        static const KeyMap kKeyMap[] = {
+        	{ "tracknumber", METADATA_KEY_CD_TRACK_NUMBER },
+	        { "discnumber", METADATA_KEY_DISC_NUMBER },
+	        { "album", METADATA_KEY_ALBUM },
+	        { "artist", METADATA_KEY_ARTIST },
+	        { "albumartist", METADATA_KEY_ALBUMARTIST },
+	        { "composer", METADATA_KEY_COMPOSER },
+	        { "genre", METADATA_KEY_GENRE },
+	        { "title", METADATA_KEY_TITLE },
+	        { "year", METADATA_KEY_YEAR },
+	        { "duration", METADATA_KEY_DURATION },
+	        { "writer", METADATA_KEY_WRITER },
+	        { "compilation", METADATA_KEY_COMPILATION },
+	        { "isdrm", METADATA_KEY_IS_DRM },
+	        { "width", METADATA_KEY_VIDEO_WIDTH },
+	        { "height", METADATA_KEY_VIDEO_HEIGHT },
+	};
+    
+        static const size_t kNumEntries = sizeof(kKeyMap) / sizeof(kKeyMap[0]);
+
+        for (size_t i = 0; i < kNumEntries; ++i) {
+            const char *value;
+            if ((value = mRetriever->extractMetadata(kKeyMap[i].key)) != NULL) {
+                status = client.addStringTag(kKeyMap[i].tag, value);
+                if (status != OK) {
+                    return MEDIA_SCAN_RESULT_ERROR;
+                }
+            }
+        }
+      }
+
+        return MEDIA_SCAN_RESULT_OK;
     }
-    else {
 #else
     sp<MediaMetadataRetriever> mRetriever(new MediaMetadataRetriever);
-#endif
+
     int fd = open(path, O_RDONLY | O_LARGEFILE);
     status_t status;
     if (fd < 0) {
@@ -261,10 +323,8 @@ MediaScanResult StagefrightMediaScanner::processFileInternal(
     }
 
     return MEDIA_SCAN_RESULT_OK;
-#ifdef ALLWINNER
-}
+  }
 #endif
-}
 
 char *StagefrightMediaScanner::extractAlbumArt(int fd) {
     ALOGV("extractAlbumArt %d", fd);

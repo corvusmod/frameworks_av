@@ -675,15 +675,15 @@ void MediaPlayerService::Client::disconnect()
 
 #ifdef ALLWINNER
 static player_type getDefaultPlayerType() {
-#if 1
+    #if 1
 	return CEDARX_PLAYER;
-#else
-    char value[PROPERTY_VALUE_MAX];
-    if (property_get("media.stagefright.use-nuplayer", value, NULL)
+    #else
+        char value[PROPERTY_VALUE_MAX];
+        if (property_get("media.stagefright.use-nuplayer", value, NULL)
             && (!strcmp("1", value) || !strcasecmp("true", value))) {
         return NU_PLAYER;
-    }
-#endif
+        }
+    #endif
 }
 
 extern int MovAudioOnlyDetect0(const char *url);
@@ -2240,6 +2240,7 @@ status_t MediaPlayerService::Client::generalInterface(int cmd, int int1, int int
     if (mp == 0) 
         return UNKNOWN_ERROR;
     return mp->generalInterface(cmd, int1, int2, int3, p);
+}
 
 #endif
 

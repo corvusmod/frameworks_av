@@ -100,7 +100,7 @@ void LiveSession::disconnect() {
 #ifdef ALLWINNER
 int64_t LiveSession::seekTo(int64_t timeUs) {
     Mutex::Autolock autoLock(mLock);
-    mSeekDone = false;
+    bool mSeekDone = false;
 
     sp<AMessage> msg = new AMessage(kWhatSeek, id());
     msg->setInt64("timeUs", timeUs);

@@ -140,9 +140,6 @@ LOCAL_STATIC_LIBRARIES := \
         libstagefright_timedtext \
         libvpx \
         libstagefright_mpeg2ts \
-ifneq ($(TARGET_BOARD_PLATFORM),exDroid)
-        libstagefright_httplive \
-endif
         libstagefright_id3 \
         libFLAC \
 
@@ -153,6 +150,10 @@ ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 	LOCAL_LDFLAGS += \
 	  $(TOP)/external/cedarx/CedarAndroidLib/LIB_JB_F23/libstagefright_httplive_opt.a
     endif
+else
+LOCAL_STATIC_LIBRARIES += \
+        libstagefright_httplive
+
 endif
 
 ifeq ($(call is-vendor-board-platform,QCOM),true)

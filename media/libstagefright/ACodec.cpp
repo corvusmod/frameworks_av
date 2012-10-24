@@ -2836,7 +2836,7 @@ void ACodec::BaseState::onOutputBufferDrained(const sp<AMessage> &msg) {
             info->mStatus = BufferInfo::OWNED_BY_US;
         }
 #ifdef ALLWINNER
-}else if (mCodec->mNativeWindowSoft != NULL
+    } else if (mCodec->mNativeWindowSoft != NULL
                 && msg->findInt32("render", &render) && render != 0)  {
         ANativeWindowBuffer *buf;
         int err;
@@ -2871,7 +2871,7 @@ void ACodec::BaseState::onOutputBufferDrained(const sp<AMessage> &msg) {
         buf = NULL;
 
         info->mStatus = BufferInfo::OWNED_BY_US;
-    }
+    
 #endif
     } else {
         info->mStatus = BufferInfo::OWNED_BY_US;
