@@ -6,7 +6,6 @@ ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_CFLAGS += -DALLWINNER
 endif
 
-
 LOCAL_SRC_FILES := \
     ISchedulingPolicyService.cpp \
     SchedulingPolicyService.cpp
@@ -37,6 +36,10 @@ LOCAL_SRC_FILES := \
 
 # uncomment for systrace
 # LOCAL_CFLAGS += -DATRACE_TAG=ATRACE_TAG_AUDIO
+
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+LOCAL_CFLAGS += -DALLWINNER
+endif
 
 LOCAL_MODULE := libnbaio
 
@@ -88,6 +91,10 @@ LOCAL_MODULE:= libaudioflinger
 LOCAL_SRC_FILES += FastMixer.cpp FastMixerState.cpp
 
 LOCAL_CFLAGS += -DFAST_MIXER_STATISTICS
+
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+LOCAL_CFLAGS += -DALLWINNER
+endif
 
 # uncomment to display CPU load adjusted for CPU frequency
 # LOCAL_CFLAGS += -DCPU_FREQUENCY_STATISTICS

@@ -2,11 +2,6 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
-ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
-endif
-
-
 LOCAL_SRC_FILES:=               \
         LiveDataSource.cpp      \
         LiveSession.cpp         \
@@ -16,6 +11,10 @@ LOCAL_C_INCLUDES:= \
 	$(TOP)/frameworks/av/media/libstagefright \
 	$(TOP)/frameworks/native/include/media/openmax \
 	$(TOP)/external/openssl/include
+
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+LOCAL_CFLAGS += -DALLWINNER
+endif
 
 LOCAL_MODULE:= libstagefright_httplive
 

@@ -1,11 +1,6 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
-ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
-endif
-
-
 LOCAL_SRC_FILES:=                       \
         GenericSource.cpp               \
         HTTPLiveSource.cpp              \
@@ -23,6 +18,10 @@ LOCAL_C_INCLUDES := \
 	$(TOP)/frameworks/av/media/libstagefright/mpeg2ts             \
 	$(TOP)/frameworks/av/media/libstagefright/rtsp                \
 	$(TOP)/frameworks/native/include/media/openmax
+
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+LOCAL_CFLAGS += -DALLWINNER
+endif
 
 LOCAL_MODULE:= libstagefright_nuplayer
 

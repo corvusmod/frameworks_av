@@ -1,10 +1,6 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
-ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
-endif
-
 LOCAL_SRC_FILES:= \
 	main_mediaserver.cpp 
 
@@ -23,6 +19,10 @@ endif
 ifeq ($(BOARD_USE_SECTVOUT),true)
     LOCAL_CFLAGS += -DSECTVOUT
     LOCAL_SHARED_LIBRARIES += libTVOut
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+LOCAL_CFLAGS += -DALLWINNER
 endif
 
 # FIXME The duplicate audioflinger is temporary

@@ -6,11 +6,6 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
-ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
-endif
-
-
 LOCAL_SRC_FILES:=               \
     CameraService.cpp
 
@@ -31,6 +26,10 @@ endif
 
 ifeq ($(BOARD_HAVE_HTC_FFC), true)
 LOCAL_CFLAGS += -DBOARD_HAVE_HTC_FFC
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+LOCAL_CFLAGS += -DALLWINNER
 endif
 
 LOCAL_MODULE:= libcameraservice

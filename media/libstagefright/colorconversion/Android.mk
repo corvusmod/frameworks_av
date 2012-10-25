@@ -1,11 +1,6 @@
 LOCAL_PATH:= $(call my-dir)
 include $(CLEAR_VARS)
 
-ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
-endif
-
-
 LOCAL_SRC_FILES:=                     \
         ColorConverter.cpp            \
         SoftwareRenderer.cpp
@@ -16,6 +11,10 @@ LOCAL_C_INCLUDES := \
 
 ifeq ($(TARGET_BOARD_PLATFORM), exynos4)
 LOCAL_CFLAGS += -DMALI_ALIGNMENT
+endif
+
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+LOCAL_CFLAGS += -DALLWINNER
 endif
 
 LOCAL_MODULE:= libstagefright_color_conversion
