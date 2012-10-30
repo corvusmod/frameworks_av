@@ -111,14 +111,14 @@ private:
     int32_t mMonitorQueueGeneration;
 
 #ifdef ALLWINNER
-    int64_t                mSeekTargetStartUs;
-    bool                mHasSeekMsg;
-    bool                mLastDownloadTobeContinue;
-    int32_t                mLastDownloadOffset;
-    int32_t                mLastSubSeqNumber;
-    int32_t                mLastSeqNumberBase;
-    bool                mIsPlaylistRedirected;
-    char*                mPlaylistRedirectURL;
+    int64_t mSeekTargetStartUs;
+    bool mHasSeekMsg;
+    bool mLastDownloadTobeContinue;
+    int32_t mLastDownloadOffset;
+    int32_t mLastSubSeqNumber;
+    int32_t mLastSeqNumberBase;
+    bool mIsPlaylistRedirected;
+    char* mPlaylistRedirectURL;
 #endif
 
     enum RefreshState {

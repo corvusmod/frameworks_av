@@ -40,11 +40,13 @@ struct sockaddr_in;
 namespace android {
 
 #ifdef ALLWINNER
+/* add by Gary. start {{----------------------------------- */
 /**
 *  screen name
 */
 #define MASTER_SCREEN        0
 #define SLAVE_SCREEN         1
+/* add by Gary. end   -----------------------------------}} */
 #endif
 
 class Parcel;
@@ -73,16 +75,15 @@ enum player_type {
 
 #ifdef ALLWINNER
 enum player_states {
-  PLAYER_STATE_UNKOWN = 0,
-  PLAYER_STATE_PREPARED,
-  PLAYER_STATE_PAUSE,
-  PLAYER_STATE_PLAYING,
-  PLAYER_STATE_SEEKING,
-  PLAYER_STATE_SUSPEND,
-  PLAYER_STATE_RESUME,
+	PLAYER_STATE_UNKOWN = 0,
+	PLAYER_STATE_PREPARED,
+	PLAYER_STATE_PAUSE,
+	PLAYER_STATE_PLAYING,
+	PLAYER_STATE_SEEKING,
+	PLAYER_STATE_SUSPEND,
+	PLAYER_STATE_RESUME,
 };
 #endif
-
 
 #define DEFAULT_AUDIOSINK_BUFFERCOUNT 4
 #define DEFAULT_AUDIOSINK_BUFFERSIZE 1200
@@ -231,12 +232,18 @@ public:
     }
 
 #ifdef ALLWINNER
+    /* add by Gary. start {{----------------------------------- */
     virtual status_t    setScreen(int screen){
         return OK;
     };
     virtual int    		getMeidaPlayerState(){
         return PLAYER_STATE_UNKOWN;
     };
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-9-14 14:27:12 */
+    /* expend interfaces about subtitle, track and so on */
     virtual int getSubCount()
     {
         return 0;
@@ -401,10 +408,20 @@ public:
     {
         return -1;
     }
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support scale mode */
     virtual status_t enableScaleMode(bool enable, int width, int height)
     {
         return -1;
     }
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support adjusting colors while playing video */
     virtual status_t setVppGate(bool enableVpp)
     {
         return OK;
@@ -430,6 +447,11 @@ public:
     {
         return OK;
     }
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-03-07 */
+    /* set audio channel mute */
     virtual status_t setChannelMuteMode(int muteMode)
     {
         return OK;
@@ -439,10 +461,16 @@ public:
     {
         return -1;
     };
+    /* add by Gary. end   -----------------------------------}} */
+    
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-4-24 */
+    /* add two general interfaces for expansibility */
     virtual status_t generalInterface(int cmd, int int1, int int2, int int3, void *p)
     {
         return OK;
     }
+    /* add by Gary. end   -----------------------------------}} */
 #endif
 
 private:

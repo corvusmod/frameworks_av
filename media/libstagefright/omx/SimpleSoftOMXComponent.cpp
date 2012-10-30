@@ -128,9 +128,9 @@ OMX_ERRORTYPE SimpleSoftOMXComponent::setParameter(
 OMX_ERRORTYPE SimpleSoftOMXComponent::getExtensionIndex(
         const char *name, OMX_INDEXTYPE *index) {
 
-  OMX_ERRORTYPE ret = OMX_ErrorUndefined;
-  ALOGV("getExtensionIndex:%s",name);
-     if (strcmp(name, ANDROID_INDEX_PARAM_ENABLE_ANB) == 0) {
+	OMX_ERRORTYPE ret = OMX_ErrorUndefined;
+	ALOGV("getExtensionIndex:%s",name);
+    if (strcmp(name, ANDROID_INDEX_PARAM_ENABLE_ANB) == 0) {
         *index = (OMX_INDEXTYPE)OMX_IndexParamEnableAndroidBuffers;
         ret = OMX_ErrorNone;
     } else if (strcmp(name, ANDROID_INDEX_PARAM_GET_ANB) == 0) {

@@ -20,6 +20,9 @@
 #include <utils/RefBase.h>
 #include <binder/IInterface.h>
 #include <binder/Parcel.h>
+#ifdef ALLWINNER
+#include "mediaplayerinfo.h"
+#endif
 #include <utils/KeyedVector.h>
 #include <system/audio.h>
 
@@ -101,6 +104,9 @@ public:
                                         Parcel *metadata) = 0;
 #ifdef ALLWINNER
     virtual status_t        setDataSource(const sp<IStreamSource>& source, int type) = 0;
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-9-15 10:25:10 */
+    /* expend interfaces about subtitle, track and so on */
     virtual int             getSubCount() = 0;
     virtual int             getSubList(MediaPlayer_SubInfo *infoList, int count) = 0;
     virtual int             getCurSub() = 0;
@@ -134,10 +140,26 @@ public:
     virtual status_t        getAudioEncode(char *encode) = 0;
     virtual int             getAudioBitRate() = 0;
     virtual int             getAudioSampleRate() = 0;
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support scale mode */
     virtual status_t        enableScaleMode(bool enable, int width, int height) = 0;
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-03-07 */
+    /* set audio channel mute */
     virtual status_t        setChannelMuteMode(int muteMode) = 0;
     virtual int             getChannelMuteMode() = 0;
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-4-24 */
+    /* add two general interfaces for expansibility */
     virtual status_t        generalInterface(int cmd, int int1, int int2, int int3, void *p) = 0;
+    /* add by Gary. end   -----------------------------------}} */
 #endif
 };
 

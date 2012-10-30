@@ -71,12 +71,10 @@ struct StagefrightRecorder : public MediaRecorderBase {
     virtual status_t dump(int fd, const Vector<String16>& args) const;
     // Querying a SurfaceMediaSourcer
     virtual sp<ISurfaceTexture> querySurfaceMediaSource() const;
-
 #ifdef ALLWINNER
     virtual status_t queueBuffer(int index, int addr_y, int addr_c, int64_t timestamp);
-    virtual  sp<IMemory> getOneBsFrame(int mode);
+    virtual	sp<IMemory> getOneBsFrame(int mode);
 #endif
-
 private:
     sp<ICamera> mCamera;
     sp<ICameraRecordingProxy> mCameraProxy;
@@ -201,12 +199,11 @@ private:
     void setDefaultProfileIfNecessary();
 
 #ifdef ALLWINNER
-private:  
-    CedarXRecorder * mpCedarXRecorder;
-    bool       mbHWEncoder;
+private:	
+	CedarXRecorder * mpCedarXRecorder;
+	bool			 mbHWEncoder;
 #endif
-
-
+	
     StagefrightRecorder(const StagefrightRecorder &);
     StagefrightRecorder &operator=(const StagefrightRecorder &);
 

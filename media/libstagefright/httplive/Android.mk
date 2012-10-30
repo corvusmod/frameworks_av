@@ -13,7 +13,7 @@ LOCAL_C_INCLUDES:= \
 	$(TOP)/external/openssl/include
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
+	LOCAL_CFLAGS += -DALLWINNER
 endif
 
 LOCAL_MODULE:= libstagefright_httplive

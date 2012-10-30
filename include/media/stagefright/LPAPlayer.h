@@ -209,6 +209,8 @@ private:
 
     MediaBuffer *mInputBuffer;
 
+
+    Mutex pmLock;
     Mutex mLock;
     Mutex mResumeLock;
 

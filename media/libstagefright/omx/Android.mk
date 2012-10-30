@@ -26,7 +26,7 @@ LOCAL_SHARED_LIBRARIES :=               \
 LOCAL_MODULE:= libstagefright_omx
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
+	LOCAL_CFLAGS += -DALLWINNER
 endif
 
 include $(BUILD_SHARED_LIBRARY)

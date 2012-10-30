@@ -66,7 +66,6 @@
 #include "TestPlayerStub.h"
 #include "StagefrightPlayer.h"
 #include "nuplayer/NuPlayerDriver.h"
-
 #ifdef ALLWINNER
 #include "CedarPlayer.h"
 #include "CedarAPlayerWrapper.h"
@@ -82,28 +81,44 @@ namespace android {
 sp<MediaPlayerBase> createAAH_TXPlayer();
 sp<MediaPlayerBase> createAAH_RXPlayer();
 }
-
 #ifdef ALLWINNER
+/* add by Gary. start {{----------------------------------- */
+/* save the screen info */
 #define PROP_SCREEN_KEY             "mediasw.sft.screen"
 #define PROP_MASTER_SCREEN          "master"
 #define PROP_SLAVE_SCREEN           "slave"
 #define PROP_SCREEN_DEFAULT_VALUE   PROP_MASTER_SCREEN
+/* add by Gary. end   -----------------------------------}} */
+
+/* add by Gary. start {{----------------------------------- */
+/* 2011-11-14 */
+/* support adjusting colors while playing video */
 #define PROP_VPP_GATE_KEY           "mediasw.sft.vpp_gate"
 #define PROP_ENABLE_VPP             "enable vpp"
 #define PROP_DISABLE_VPP            "disable vpp"
 #define PROP_VPP_GATE_DEFAULT_VALUE PROP_DISABLE_VPP
+
 #define PROP_LUMA_SHARP_KEY           "mediasw.sft.luma_sharp"
 #define PROP_LUMA_SHARP_DEFAULT_VALUE PROP_DISABLE_VPP
+
 #define PROP_CHROMA_SHARP_KEY           "mediasw.sft.chroma_sharp"
 #define PROP_CHROMA_SHARP_DEFAULT_VALUE PROP_DISABLE_VPP
+
 #define PROP_WHITE_EXTEND_KEY           "mediasw.sft.white_extend"
 #define PROP_WHITE_EXTEND_DEFAULT_VALUE PROP_DISABLE_VPP
+
 #define PROP_BLACK_EXTEND_KEY           "mediasw.sft.black_extend"
 #define PROP_BLACK_EXTEND_DEFAULT_VALUE PROP_DISABLE_VPP
+/* add by Gary. end   -----------------------------------}} */
+
+/* add by Gary. start {{----------------------------------- */
+/* 2012-03-12 */
+/* add the global interfaces to control the subtitle gate  */
 #define PROP_GLOBAL_SUB_GATE_KEY           "persist.mediasw.sft.sub_gate"
 #define PROP_ENABLE_GLOBAL_SUB             "enable global sub"
 #define PROP_DISABLE_GLOBAL_SUB            "disable global sub"
 #define PROP_GLOBAL_SUB_GATE_DEFAULT_VALUE PROP_ENABLE_GLOBAL_SUB
+/* add by Gary. end   -----------------------------------}} */
 #endif
 
 namespace {
@@ -229,7 +244,21 @@ typedef struct {
     const char *extension;
     const player_type playertype;
 } extmap;
+
 extmap FILE_EXTS [] =  {
+#ifdef ALLWINNER
+		{".ogg", STAGEFRIGHT_PLAYER},
+		{".mp3", STAGEFRIGHT_PLAYER},
+		{".wav", STAGEFRIGHT_PLAYER},
+		{".amr", STAGEFRIGHT_PLAYER},
+		{".flac", STAGEFRIGHT_PLAYER},
+		{".m4a", STAGEFRIGHT_PLAYER},
+		{".m4r", STAGEFRIGHT_PLAYER},
+		{".out", STAGEFRIGHT_PLAYER},
+		//{".3gp", STAGEFRIGHT_PLAYER},
+
+		//{".aac", STAGEFRIGHT_PLAYER},
+#endif
         {".mid", SONIVOX_PLAYER},
         {".midi", SONIVOX_PLAYER},
         {".smf", SONIVOX_PLAYER},
@@ -238,33 +267,22 @@ extmap FILE_EXTS [] =  {
         {".rtttl", SONIVOX_PLAYER},
         {".rtx", SONIVOX_PLAYER},
         {".ota", SONIVOX_PLAYER},
-
 #ifdef ALLWINNER
-        {".ogg", STAGEFRIGHT_PLAYER},
-        {".mp3", STAGEFRIGHT_PLAYER},
-        {".wav", STAGEFRIGHT_PLAYER},
-        {".amr", STAGEFRIGHT_PLAYER},
-        {".flac", STAGEFRIGHT_PLAYER},
-        {".m4a", STAGEFRIGHT_PLAYER},
-        {".m4r", STAGEFRIGHT_PLAYER},
-        {".out", STAGEFRIGHT_PLAYER},
-	{".ape", CEDARA_PLAYER},
+        {".ape", CEDARA_PLAYER},
         {".ac3", CEDARA_PLAYER},
         {".dts", CEDARA_PLAYER},
         {".wma", CEDARA_PLAYER},
         {".aac", CEDARA_PLAYER},
         {".mp2", CEDARA_PLAYER},
-        {".mp1", CEDARA_PLAYER}
-#endif
+        {".mp1", CEDARA_PLAYER},
 };
 
-#ifdef ALLWINNER
 extmap MP4A_FILE_EXTS [] =  {
 	{".m4a", CEDARX_PLAYER},
 	{".m4r", CEDARX_PLAYER},
 	{".3gpp", CEDARX_PLAYER},
-};
 #endif
+};
 
 // TODO: Find real cause of Audio/Video delay in PV framework and remove this workaround
 /* static */ int MediaPlayerService::AudioOutput::mMinBufferCount = 4;
@@ -288,8 +306,8 @@ MediaPlayerService::MediaPlayerService()
     }
     // speaker is on by default
     mBatteryAudio.deviceOn[SPEAKER] = 1;
-
 #ifdef ALLWINNER
+    /* add by Gary. start {{----------------------------------- */
     char prop_value[PROPERTY_VALUE_MAX];
     property_get(PROP_SCREEN_KEY, prop_value, PROP_SCREEN_DEFAULT_VALUE);
     ALOGV("prop_value = %s", prop_value);
@@ -298,7 +316,11 @@ MediaPlayerService::MediaPlayerService()
         mScreen = MASTER_SCREEN;
     else
         mScreen = SLAVE_SCREEN;
+    /* add by Gary. end   -----------------------------------}} */
 
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support adjusting colors while playing video */
     property_get(PROP_VPP_GATE_KEY, prop_value, PROP_VPP_GATE_DEFAULT_VALUE);
     ALOGV("prop_value of PROP_VPP_GATE_KEY = %s", prop_value);
     String8 vpp_value(prop_value);
@@ -340,7 +362,11 @@ MediaPlayerService::MediaPlayerService()
         int_value = 0;
     int_value %= 5;
     mBlackExtend = int_value;
+    /* add by Gary. end   -----------------------------------}} */
 
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-03-12 */
+    /* add the global interfaces to control the subtitle gate  */
     property_get(PROP_GLOBAL_SUB_GATE_KEY, prop_value, PROP_GLOBAL_SUB_GATE_DEFAULT_VALUE);
     ALOGV("prop_value of PROP_GLOBAL_SUB_GATE_KEY = %s", prop_value);
     String8 global_sub_value(prop_value);
@@ -348,6 +374,7 @@ MediaPlayerService::MediaPlayerService()
         mGlobalSubGate = true;
     else
         mGlobalSubGate = false;
+    /* add by Gary. end   -----------------------------------}} */    
 #endif
 }
 
@@ -391,17 +418,24 @@ sp<IMediaPlayer> MediaPlayerService::create(pid_t pid, const sp<IMediaPlayerClie
 
     ALOGV("Create new client(%d) from pid %d, uid %d, ", connId, pid,
          IPCThreadState::self()->getCallingUid());
-
 #ifdef ALLWINNER
+    /* add by Gary. start {{----------------------------------- */
     c->setScreen(mScreen);
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support adjusting colors while playing video */
     c->setVppGate(mVppGate);
     c->setLumaSharp(mLumaSharp);
     c->setChromaSharp(mChromaSharp);
     c->setWhiteExtend(mWhiteExtend);
     c->setBlackExtend(mBlackExtend);
     c->setBlackExtend(mBlackExtend);
-    c->setSubGate(mGlobalSubGate); 
+    c->setSubGate(mGlobalSubGate);  // 2012-03-12, add the global interfaces to control the subtitle gate
+    /* add by Gary. end   -----------------------------------}} */
 #endif
+    
 
     wp<Client> w = c;
     {
@@ -673,31 +707,35 @@ void MediaPlayerService::Client::disconnect()
     IPCThreadState::self()->flushCommands();
 }
 
-#ifdef ALLWINNER
 static player_type getDefaultPlayerType() {
-    #if 1
+#ifdef ALLWINNER
 	return CEDARX_PLAYER;
-    #else
-        char value[PROPERTY_VALUE_MAX];
-        if (property_get("media.stagefright.use-nuplayer", value, NULL)
+#else
+    char value[PROPERTY_VALUE_MAX];
+    if (property_get("media.stagefright.use-nuplayer", value, NULL)
             && (!strcmp("1", value) || !strcasecmp("true", value))) {
         return NU_PLAYER;
-        }
-    #endif
+    }
+
+    return STAGEFRIGHT_PLAYER;
+#endif
 }
 
+#ifdef ALLWINNER
 extern int MovAudioOnlyDetect0(const char *url);
 extern int MovAudioOnlyDetect1(int fd, int64_t offset, int64_t length);
+#endif
 
-player_type getPlayerType(int fd, int64_t offset, int64_t length, bool check_cedar)
+player_type getPlayerType(int fd, int64_t offset, int64_t length, bool check_cedar=false)
 {
-	int r_size;
-	int file_format;
-    char buf[2048];
+#ifdef ALLWINNER
+    int bufSize = 2048;
+#else
+    int bufSize = 20;
+#endif
+    char buf[bufSize];
     lseek(fd, offset, SEEK_SET);
-    r_size = read(fd, buf, sizeof(buf));
-    lseek(fd, offset, SEEK_SET);
-
+    int r_size = read(fd, buf, sizeof(buf));
     long ident = *((long*)buf);
 
     // Ogg vorbis?
@@ -721,8 +759,9 @@ player_type getPlayerType(int fd, int64_t offset, int64_t length, bool check_ced
         EAS_Shutdown(easdata);
     }
 
+#ifdef ALLWINNER
     if (check_cedar) {
-		file_format = audio_format_detect((unsigned char*)buf, r_size);
+		int file_format = audio_format_detect((unsigned char*)buf, r_size);
 		ALOGV("getPlayerType: %d",file_format);
 
 		if (file_format == MEDIA_FORMAT_3GP) {
@@ -748,88 +787,32 @@ player_type getPlayerType(int fd, int64_t offset, int64_t length, bool check_ced
 			}
 		}
     }
-
-    return STAGEFRIGHT_PLAYER; //getDefaultPlayerType();
-}
-#else
-static player_type getDefaultPlayerType() {
-    char value[PROPERTY_VALUE_MAX];
-    if (property_get("media.stagefright.use-nuplayer", value, NULL)
-            && (!strcmp("1", value) || !strcasecmp("true", value))) {
-        return NU_PLAYER;
-    }
-
-    return STAGEFRIGHT_PLAYER;
-}
-
-player_type getPlayerType(int fd, int64_t offset, int64_t length)
-{
-    char buf[20];
-    lseek(fd, offset, SEEK_SET);
-    read(fd, buf, sizeof(buf));
-    lseek(fd, offset, SEEK_SET);
-
-    long ident = *((long*)buf);
-
-    // Ogg vorbis?
-    if (ident == 0x5367674f) // 'OggS'
-        return STAGEFRIGHT_PLAYER;
-
-    // Some kind of MIDI?
-    EAS_DATA_HANDLE easdata;
-    if (EAS_Init(&easdata) == EAS_SUCCESS) {
-        EAS_FILE locator;
-        locator.path = NULL;
-        locator.fd = fd;
-        locator.offset = offset;
-        locator.length = length;
-        EAS_HANDLE  eashandle;
-        if (EAS_OpenFile(easdata, &locator, &eashandle) == EAS_SUCCESS) {
-            EAS_CloseFile(easdata, eashandle);
-            EAS_Shutdown(easdata);
-            return SONIVOX_PLAYER;
-        }
-        EAS_Shutdown(easdata);
-    }
-
-    return getDefaultPlayerType();
-}
 #endif
+    return check_cedar ? STAGEFRIGHT_PLAYER : getDefaultPlayerType();
+}
 
-#ifdef ALLWINNER
 player_type getPlayerType(const char* url)
 {
+#ifdef ALLWINNER
 	char *strpos;
+#endif
+
     if (TestPlayerStub::canBeUsed(url)) {
         return TEST_PLAYER;
     }
 
-if (!strncasecmp("aahRX://", url, 8)) {
-        return AAH_RX_PLAYER;
-    }
+#ifdef ALLWINNER
     if (!strncasecmp("http://", url, 7) || !strncasecmp("https://", url, 8)) {
 		if((strpos = strrchr(url,'?')) != NULL) {
-
-
-
 			for (int i = 0; i < NELEM(FILE_EXTS); ++i) {
 					int len = strlen(FILE_EXTS[i].extension);
 						if (!strncasecmp(strpos -len, FILE_EXTS[i].extension, len)) {
-
-
 							return FILE_EXTS[i].playertype;
 						}
 				}
 		}
 	}
-
 #else
-player_type getPlayerType(const char* url)
-{
-    if (TestPlayerStub::canBeUsed(url)) {
-        return TEST_PLAYER;
-    }
-
     if (!strncasecmp("http://", url, 7)
             || !strncasecmp("https://", url, 8)) {
         size_t len = strlen(url);
@@ -847,7 +830,6 @@ player_type getPlayerType(const char* url)
     if (!strncasecmp("rtsp://", url, 7)) {
         return NU_PLAYER;
     }
-
 #endif
 
     if (!strncasecmp("aahRX://", url, 8)) {
@@ -856,18 +838,11 @@ player_type getPlayerType(const char* url)
 
     // use MidiFile for MIDI extensions
     int lenURL = strlen(url);
-#ifdef ALLWINNER
     int len;
     int start;
-#endif
     for (int i = 0; i < NELEM(FILE_EXTS); ++i) {
-#ifdef ALLWINNER
         len = strlen(FILE_EXTS[i].extension);
         start = lenURL - len;
-#else
-        int len = strlen(FILE_EXTS[i].extension);
-        int start = lenURL - len;
-#endif
         if (start > 0) {
             if (!strncasecmp(url + start, FILE_EXTS[i].extension, len)) {
                 return FILE_EXTS[i].playertype;
@@ -1014,12 +989,7 @@ sp<MediaPlayerBase> MediaPlayerService::Client::createPlayer(player_type playerT
 sp<MediaPlayerBase> MediaPlayerService::Client::setDataSource_pre(
         player_type playerType)
 {
-
-#ifdef ALLWINNER
     ALOGV("setDataSource_pre player type = %d", playerType);
-#else
-    ALOGV("player type = %d", playerType);
-#endif
 
     // create the right type of player
     sp<MediaPlayerBase> p = createPlayer(playerType);
@@ -1039,12 +1009,7 @@ void MediaPlayerService::Client::setDataSource_post(
         const sp<MediaPlayerBase>& p,
         status_t status)
 {
-
-#ifdef ALLWINNER
     ALOGV("setDataSource_post setDataSource");
-#else
-    ALOGV(" setDataSource");
-#endif
     mStatus = status;
     if (mStatus != OK) {
         ALOGE("  error: %d", mStatus);
@@ -1072,7 +1037,8 @@ status_t MediaPlayerService::Client::setDataSource(
         return UNKNOWN_ERROR;
 
 #ifdef ALLWINNER
-if(strncmp(url, DLNA_SOURCE_DETECTOR, 33) == 0){
+	/*Start by Bevis. */
+	if(strncmp(url, DLNA_SOURCE_DETECTOR, 33) == 0){
 		ALOGV("##########[MediaPlayerService]set DlnaSourceDetector!");
 		mService->mDetectClient = this;
 		return OK;
@@ -1085,6 +1051,7 @@ if(strncmp(url, DLNA_SOURCE_DETECTOR, 33) == 0){
 		dClient->notify(dClient.get(), MEDIA_SOURCE_DETECTED, 0, 0, parcel);
 		delete parcel;
 	}
+	/*End by Bevis. */
 #endif
 
     if ((strncmp(url, "http://", 7) == 0) ||
@@ -1115,7 +1082,11 @@ if(strncmp(url, DLNA_SOURCE_DETECTOR, 33) == 0){
         if (p == NULL) {
             return NO_INIT;
         }
+        
 #ifdef ALLWINNER
+        /* add by Gary. start {{----------------------------------- */
+        /* 2011-9-28 16:28:24 */
+        /* save properties before creating the real player */
         p->setSubGate(mSubGate);
         p->setSubColor(mSubColor);
         p->setSubFrameColor(mSubFrameColor);
@@ -1126,9 +1097,17 @@ if(strncmp(url, DLNA_SOURCE_DETECTOR, 33) == 0){
 		p->switchSub(mSubIndex);
 		p->switchTrack(mTrackIndex);
         p->setChannelMuteMode(mMuteMode); // 2012-03-07, set audio channel mute
+        /* add by Gary. end   -----------------------------------}} */
         
+        /* add by Gary. start {{----------------------------------- */
+        /* 2011-11-14 */
+        /* support scale mode */
         p->enableScaleMode(mEnableScaleMode, mScaleWidth, mScaleHeight);
-        
+        /* add by Gary. end   -----------------------------------}} */
+
+        /* add by Gary. start {{----------------------------------- */
+        /* 2011-11-30 */
+        /* fix the bug about setting global attibute */
         ALOGV("MediaPlayerService::Client::setDataSource() : screen = %d", mScreen);
         p->setScreen(mScreen);
         p->setVppGate(mVppGate);
@@ -1136,7 +1115,9 @@ if(strncmp(url, DLNA_SOURCE_DETECTOR, 33) == 0){
         p->setChromaSharp(mChromaSharp);
         p->setWhiteExtend(mWhiteExtend);
         p->setBlackExtend(mBlackExtend);
+        /* add by Gary. end   -----------------------------------}} */
 #endif
+
         setDataSource_post(p, p->setDataSource(url, headers));
         return mStatus;
     }
@@ -1195,6 +1176,9 @@ status_t MediaPlayerService::Client::setDataSource(
     }
 
 #ifdef ALLWINNER
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-9-28 16:28:24 */
+    /* save properties before creating the real player */
     p->setSubGate(mSubGate);
     p->setSubColor(mSubColor);
     p->setSubFrameColor(mSubFrameColor);
@@ -1202,20 +1186,28 @@ status_t MediaPlayerService::Client::setDataSource(
     p->setSubDelay(mSubDelay);
     p->setSubFontSize(mSubFontSize);
     p->setSubCharset(mSubCharset);
-    p->switchSub(mSubIndex);
-    p->switchTrack(mTrackIndex);
+	p->switchSub(mSubIndex);
+	p->switchTrack(mTrackIndex);
     p->setChannelMuteMode(mMuteMode); // 2012-03-07, set audio channel mute
+    /* add by Gary. end   -----------------------------------}} */
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support scale mode */
     p->enableScaleMode(mEnableScaleMode, mScaleWidth, mScaleHeight);
+    /* add by Gary. end   -----------------------------------}} */
 
-    ALOGV("MediaPlayerService::Client::setDataSource() : screen = %d", mScreen);
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-30 */
+    /* fix the bug about setting global attibute */
+	ALOGV("MediaPlayerService::Client::setDataSource() : screen = %d", mScreen);
     p->setScreen(mScreen);
     p->setVppGate(mVppGate);
     p->setLumaSharp(mLumaSharp);
     p->setChromaSharp(mChromaSharp);
     p->setWhiteExtend(mWhiteExtend);
     p->setBlackExtend(mBlackExtend);
+    /* add by Gary. end   -----------------------------------}} */
 #endif
-
     // now set data source
     setDataSource_post(p, p->setDataSource(source));
     return mStatus;
@@ -1230,6 +1222,9 @@ status_t MediaPlayerService::Client::setDataSource(
 		return NO_INIT;
 	}
 
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-9-28 16:28:24 */
+    /* save properties before creating the real player */
     p->setSubGate(mSubGate);
     p->setSubColor(mSubColor);
     p->setSubFrameColor(mSubFrameColor);
@@ -1237,18 +1232,28 @@ status_t MediaPlayerService::Client::setDataSource(
     p->setSubDelay(mSubDelay);
     p->setSubFontSize(mSubFontSize);
     p->setSubCharset(mSubCharset);
-    p->switchSub(mSubIndex);
-    p->switchTrack(mTrackIndex);
+	p->switchSub(mSubIndex);
+	p->switchTrack(mTrackIndex);
     p->setChannelMuteMode(mMuteMode); // 2012-03-07, set audio channel mute
-    p->enableScaleMode(mEnableScaleMode, mScaleWidth, mScaleHeight);
+    /* add by Gary. end   -----------------------------------}} */
 
-    ALOGV("MediaPlayerService::Client::setDataSource() : screen = %d", mScreen);
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support scale mode */
+    p->enableScaleMode(mEnableScaleMode, mScaleWidth, mScaleHeight);
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-30 */
+    /* fix the bug about setting global attibute */
+	ALOGV("MediaPlayerService::Client::setDataSource() : screen = %d", mScreen);
     p->setScreen(mScreen);
     p->setVppGate(mVppGate);
     p->setLumaSharp(mLumaSharp);
     p->setChromaSharp(mChromaSharp);
     p->setWhiteExtend(mWhiteExtend);
     p->setBlackExtend(mBlackExtend);
+    /* add by Gary. end   -----------------------------------}} */
 
 
     setDataSource_post(p, p->setDataSource(source));
@@ -1566,6 +1571,7 @@ status_t MediaPlayerService::Client::getParameter(int key, Parcel *reply) {
 }
 
 #ifdef ALLWINNER
+/* add by Gary. start {{----------------------------------- */
 status_t MediaPlayerService::setScreen(int screen)
 {
     ALOGV("setScreen(%d)", screen);
@@ -1652,6 +1658,11 @@ status_t MediaPlayerService::Client::isPlayingVideo(int *playing)
     return OK;
 }
 
+/* add by Gary. end   -----------------------------------}} */
+
+/* add by Gary. start {{----------------------------------- */
+/* 2011-9-15 15:41:36 */
+/* expend interfaces about subtitle, track and so on */
 int MediaPlayerService::Client::getSubCount()
 {
     sp<MediaPlayerBase> p = getPlayer();
@@ -1928,6 +1939,12 @@ int MediaPlayerService::Client::getAudioSampleRate()
     return p->getAudioSampleRate();
 }
 
+/* add by Gary. end   -----------------------------------}} */
+
+
+/* add by Gary. start {{----------------------------------- */
+/* 2011-11-14 */
+/* support scale mode */
 status_t MediaPlayerService::Client::enableScaleMode(bool enable, int width, int height)
 {
     mEnableScaleMode = enable;
@@ -1938,7 +1955,11 @@ status_t MediaPlayerService::Client::enableScaleMode(bool enable, int width, int
         return UNKNOWN_ERROR;
     return p->enableScaleMode(enable, width, height);
 }
+/* add by Gary. end   -----------------------------------}} */
 
+/* add by Gary. start {{----------------------------------- */
+/* 2011-11-14 */
+/* support adjusting colors while playing video */
 status_t MediaPlayerService::setVppGate(bool enableVpp)
 {
     if( enableVpp == mVppGate )
@@ -2169,6 +2190,11 @@ status_t MediaPlayerService::Client::setBlackExtend(int value)
     return p->setBlackExtend(value);
 }
 
+/* add by Gary. end   -----------------------------------}} */
+
+/* add by Gary. start {{----------------------------------- */
+/* 2012-03-07 */
+/* set audio channel mute */
 status_t MediaPlayerService::Client::setChannelMuteMode(int muteMode)
 {
     mMuteMode = muteMode;
@@ -2185,7 +2211,11 @@ int MediaPlayerService::Client::getChannelMuteMode()
         return -1;
     return p->getChannelMuteMode();
 }
+/* add by Gary. end   -----------------------------------}} */
 
+/* add by Gary. start {{----------------------------------- */
+/* 2012-03-12 */
+/* add the global interfaces to control the subtitle gate  */
 status_t MediaPlayerService::setGlobalSubGate(bool showSub)
 {
     ALOGV("MediaPlayerService::setGlobalSubGate(): enable = %d", showSub);
@@ -2218,7 +2248,11 @@ bool MediaPlayerService::getGlobalSubGate()
 {
     return mGlobalSubGate;
 }
+/* add by Gary. end   -----------------------------------}} */
 
+/* add by Gary. start {{----------------------------------- */
+/* 2012-4-24 */
+/* add two general interfaces for expansibility */
 status_t MediaPlayerService::generalGlobalInterface(int cmd, int int1, int int2, int int3, void *p)
 {
     switch(cmd){
@@ -2233,6 +2267,8 @@ status_t MediaPlayerService::generalGlobalInterface(int cmd, int int1, int int2,
     }
     return OK;
 }
+/* add by Gary. end   -----------------------------------}} */
+
 
 status_t MediaPlayerService::Client::generalInterface(int cmd, int int1, int int2, int int3, void *p)
 {
@@ -2241,9 +2277,7 @@ status_t MediaPlayerService::Client::generalInterface(int cmd, int int1, int int
         return UNKNOWN_ERROR;
     return mp->generalInterface(cmd, int1, int2, int3, p);
 }
-
 #endif
-
 status_t MediaPlayerService::Client::setRetransmitEndpoint(
         const struct sockaddr_in* endpoint) {
 

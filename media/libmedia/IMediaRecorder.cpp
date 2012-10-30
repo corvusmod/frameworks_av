@@ -93,15 +93,15 @@ public:
 #ifdef ALLWINNER
     status_t queueBuffer(int index, int addr_y, int addr_c, int64_t timestamp)
     {
-        ALOGV("queueBuffer(%d)", index);
-    	Parcel data, reply;
-        data.writeInterfaceToken(IMediaRecorder::getInterfaceDescriptor());
-    	data.writeInt32(index);
-    	data.writeInt32(addr_y);
-    	data.writeInt32(addr_c);
-    	data.writeInt64(timestamp);
-    	remote()->transact(QUEUE_BUFFER, data, &reply);
-    	return reply.readInt32();
+		ALOGV("queueBuffer(%d)", index);
+		Parcel data, reply;
+		data.writeInterfaceToken(IMediaRecorder::getInterfaceDescriptor());
+		data.writeInt32(index);
+		data.writeInt32(addr_y);
+		data.writeInt32(addr_c);
+		data.writeInt64(timestamp);
+		remote()->transact(QUEUE_BUFFER, data, &reply);
+		return reply.readInt32();
     }
 #endif
 
@@ -257,18 +257,18 @@ public:
 
 #ifdef ALLWINNER
     sp<IMemory> getOneBsFrame(int mode)
-    {
-    	ALOGV("getMaxAmplitude");
-    	Parcel data, reply;
-    	data.writeInterfaceToken(IMediaRecorder::getInterfaceDescriptor());
-    	data.writeInt32(mode);
-    	remote()->transact(GET_ONE_BSFRAME, data, &reply);
-    	status_t ret = reply.readInt32();
-    	if (ret != NO_ERROR) {
-      		return NULL;
-    	}
-    	return interface_cast<IMemory>(reply.readStrongBinder());
-  	}
+	{
+		ALOGV("getMaxAmplitude");
+		Parcel data, reply;
+		data.writeInterfaceToken(IMediaRecorder::getInterfaceDescriptor());
+		data.writeInt32(mode);
+		remote()->transact(GET_ONE_BSFRAME, data, &reply);
+		status_t ret = reply.readInt32();
+		if (ret != NO_ERROR) {
+			return NULL;
+		}
+		return interface_cast<IMemory>(reply.readStrongBinder());
+	}
 #endif
     status_t start()
     {
@@ -375,20 +375,19 @@ status_t BnMediaRecorder::onTransact(
             reply->writeInt32(ret);
             return NO_ERROR;
         } break;
-
 #ifdef ALLWINNER
         case GET_ONE_BSFRAME: {
-	        ALOGV("GET_ONE_BSFRAME");
-      		CHECK_INTERFACE(IMediaRecorder, data, reply);
-      		int mode = data.readInt32();
-       	        sp<IMemory> bitmap = getOneBsFrame(mode);
-       	        if (bitmap != 0) {  // Don't send NULL across the binder interface
-       		         reply->writeInt32(NO_ERROR);
-       		         reply->writeStrongBinder(bitmap->asBinder());
-       	        } else {
-       		         reply->writeInt32(UNKNOWN_ERROR);
-       	        }
-      		return NO_ERROR;
+        	ALOGV("GET_ONE_BSFRAME");
+			CHECK_INTERFACE(IMediaRecorder, data, reply);
+			int mode = data.readInt32();
+            sp<IMemory> bitmap = getOneBsFrame(mode);
+            if (bitmap != 0) {  // Don't send NULL across the binder interface
+                reply->writeInt32(NO_ERROR);
+                reply->writeStrongBinder(bitmap->asBinder());
+            } else {
+                reply->writeInt32(UNKNOWN_ERROR);
+            }
+			return NO_ERROR;
         }
         break;
 #endif
@@ -504,17 +503,16 @@ status_t BnMediaRecorder::onTransact(
             }
             return NO_ERROR;
         } break;
-
 #ifdef ALLWINNER
         case QUEUE_BUFFER: {
-	     	ALOGV("QUEUE_BUFFER");
-      		CHECK_INTERFACE(IMediaRecorder, data, reply);
-      		int32_t index  = data.readInt32();
-      		int32_t addr_y = data.readInt32();
-      		int32_t addr_c = data.readInt32();
-      		int64_t timestamp = data.readInt64();
-      		reply->writeInt32(queueBuffer(index, addr_y, addr_c, timestamp));
-            	return NO_ERROR;
+        	ALOGV("QUEUE_BUFFER");
+			CHECK_INTERFACE(IMediaRecorder, data, reply);
+			int32_t index  = data.readInt32();
+			int32_t addr_y = data.readInt32();
+			int32_t addr_c = data.readInt32();
+			int64_t timestamp = data.readInt64();
+			reply->writeInt32(queueBuffer(index, addr_y, addr_c, timestamp));
+            return NO_ERROR;
         } break;
 #endif
         default:

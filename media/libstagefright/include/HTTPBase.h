@@ -19,24 +19,21 @@
 #define HTTP_BASE_H_
 
 #include <media/stagefright/foundation/ABase.h>
-#include <media/stagefright/DataSource.h>
-#include <media/stagefright/MediaErrors.h>
-#include <utils/threads.h>
-
 #ifdef ALLWINNER
 #include <media/stagefright/foundation/AString.h>
 #endif
+#include <media/stagefright/DataSource.h>
+#include <media/stagefright/MediaErrors.h>
+#include <utils/threads.h>
 
 namespace android {
 
 struct HTTPBase : public DataSource {
     enum Flags {
         // Don't log any URLs.
-#ifdef ALLWINNER
         kFlagIncognito = 1,
-        kFlagUAIPAD  = 256
-#else
-        kFlagIncognito = 1
+#ifdef ALLWINNER
+        kFlagUAIPAD  = 256,
 #endif
     };
 
@@ -66,30 +63,32 @@ struct HTTPBase : public DataSource {
     static void UnRegisterSocketUserTag(int sockfd);
 
 #ifdef ALLWINNER
-virtual AString getRedirectUri()
+    //* add by chenxiaochuan for QQ live stream.
+    virtual AString getRedirectUri()
     {
-      return AString("");
+    	return AString("");
     }
 
     virtual bool isRedirected()
     {
-      return false;
+    	return false;
     }
 
     virtual void setRedirectHost(const char* host)
     {
-      return;
+    	return;
     }
 
     virtual void setRedirectPort(const char* port)
     {
-      return;
+    	return;
     }
 
     virtual void setRedirectPath(const char* path)
     {
-      return;
+    	return;
     }
+    //* end.
 #endif
 
 protected:

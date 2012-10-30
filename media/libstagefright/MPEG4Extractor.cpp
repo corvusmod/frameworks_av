@@ -628,6 +628,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
     if (mDataSource->readAt(*offset, hdr, 8) < 8) {
         return ERROR_IO;
     }
+    ALOGV("*offset:0x%llx",*offset);
     uint64_t chunk_size = ntohl(hdr[0]);
     uint32_t chunk_type = ntohl(hdr[1]);
     off64_t data_offset = *offset + 8;
@@ -751,16 +752,16 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             *offset = data_offset;
             while (*offset < stop_offset) {
 #ifdef ALLWINNER
-            //ALOGV("*offset=0x%llx,stop_offset=0x%llx",*offset,stop_offset);
+            	//ALOGV("*offset=0x%llx,stop_offset=0x%llx",*offset,stop_offset);
                 if (*offset < stop_offset-8) {
-                  status_t err = parseChunk(offset, depth + 1);
-          if (err != OK) {
-            return err;
-          }
-        }
-        else {
-          *offset = stop_offset;
-                }
+                	status_t err = parseChunk(offset, depth + 1);
+					if (err != OK) {
+						return err;
+					}
+				}
+				else {
+					*offset = stop_offset;
+				}
 #else
                 status_t err = parseChunk(offset, depth + 1);
                 if (err != OK) {
@@ -1133,14 +1134,14 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
 #endif
             while (*offset < stop_offset) {
 #ifdef ALLWINNER
-            if (*offset < stop_offset-8) {
-	          status_t err = parseChunk(offset, depth + 1);
-        	 if (err != OK) {
-            	return err;
-          	}
-       	 }
-      		  else {
-       		   *offset = stop_offset;
+            	if (*offset < stop_offset-8) {
+					status_t err = parseChunk(offset, depth + 1);
+					if (err != OK) {
+						return err;
+					}
+				}
+				else {
+					*offset = stop_offset;
 #else
                 status_t err = parseChunk(offset, depth + 1);
                 if (err != OK) {
@@ -1196,14 +1197,14 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
             *offset = data_offset + sizeof(buffer);
             while (*offset < stop_offset) {
 #ifdef ALLWINNER
-            if (*offset < stop_offset-8) {
-       		   status_t err = parseChunk(offset, depth + 1);
-       		   if (err != OK) {
-       		     return err;
-       		   }
-       		       }
-       		       else {
-	                *offset = stop_offset;
+            	if (*offset < stop_offset-8) {
+					status_t err = parseChunk(offset, depth + 1);
+					if (err != OK) {
+						return err;
+					}
+            	}
+            	else {
+            		*offset = stop_offset;
 #else
                 status_t err = parseChunk(offset, depth + 1);
                 if (err != OK) {
@@ -1664,7 +1665,7 @@ status_t MPEG4Extractor::parseChunk(off64_t *offset, int depth) {
         }
 
 #ifdef ALLWINNER
-case FOURCC('w', 'a', 'v', 'e'):
+        case FOURCC('w', 'a', 'v', 'e'):
 		{
 			off64_t stop_offset = *offset + chunk_size;
 			*offset = data_offset;
@@ -1714,18 +1715,16 @@ case FOURCC('w', 'a', 'v', 'e'):
         }
 
 #ifdef ALLWINNER
-       case 0: //leaf atom
-    {
-          return INFO_VENDOR_LEAF_ATOM;
-    }
+        case 0: //leaf atom
+		{
+        	return INFO_VENDOR_LEAF_ATOM;
+		}
 #endif
 
         default:
         {
             *offset += chunk_size;
-#ifdef ALLWINNER
-	ALOGV("skip parser chunk");
-#endif
+            ALOGV("skip parser chunk");
             break;
         }
     }
@@ -2508,8 +2507,16 @@ ALOGV("syncSampleIndex:%d",syncSampleIndex);
             CHECK(mBuffer != NULL);
             mBuffer->set_range(0, size);
             mBuffer->meta_data()->clear();
+#ifdef ALLWINNER
+            mBuffer->meta_data()->setInt64(
+                    kKeyTime, ((int64_t)cts * 1000000) / mTimescale);
+            if (isSeekMode) { //set video offset
+            	mBuffer->meta_data()->setInt64(kKeyOffset, offset);
+            }
+#else
             mBuffer->meta_data()->setInt64(
                     kKeyTime, (cts * 1000000) / mTimescale);
+#endif
 
             if (targetSampleTimeUs >= 0) {
                 mBuffer->meta_data()->setInt64(
@@ -2641,7 +2648,14 @@ ALOGV("syncSampleIndex:%d",syncSampleIndex);
 
         mBuffer->meta_data()->clear();
         mBuffer->meta_data()->setInt64(
+#ifdef ALLWINNER
+                kKeyTime, ((int64_t)cts * 1000000) / mTimescale);
+        if (isSeekMode) { //set video offset
+        	mBuffer->meta_data()->setInt64(kKeyOffset, offset);
+        }
+#else
                 kKeyTime, (cts * 1000000) / mTimescale);
+#endif
 
         if (targetSampleTimeUs >= 0) {
             mBuffer->meta_data()->setInt64(

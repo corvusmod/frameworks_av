@@ -20,7 +20,7 @@ ifeq ($(TARGET_ARCH),arm)
 endif
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
+	LOCAL_CFLAGS += -DALLWINNER
 endif
 
 include $(BUILD_STATIC_LIBRARY)

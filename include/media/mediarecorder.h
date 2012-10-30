@@ -148,7 +148,7 @@ enum media_recorder_event_type {
     MEDIA_RECORDER_VENDOR_EVENT_LIST_START        = 3000,
     MEDIA_RECORDER_VENDOR_EVENT_EMPTY_BUFFER_ID   = 3000,
     MEDIA_RECORDER_VENDOR_EVENT_BSFRAME_AVAILABLE = 3001,
-    MEDIA_RECORDER_VENDOR_EVENT_LIST_END    = 3100,
+    MEDIA_RECORDER_VENDOR_EVENT_LIST_END		  = 3100,
 #endif
 };
 
@@ -254,12 +254,10 @@ public:
     status_t    release();
     void        notify(int msg, int ext1, int ext2);
     sp<ISurfaceTexture>     querySurfaceMediaSourceFromMediaServer();
-
 #ifdef ALLWINNER
     status_t queueBuffer(int index, int addr_y, int addr_c, int64_t timestamp);
     sp<IMemory> getOneBsFrame(int mode);
 #endif
-
 private:
     void                    doCleanUp();
     status_t                doReset();

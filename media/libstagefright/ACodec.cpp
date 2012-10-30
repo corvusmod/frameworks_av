@@ -44,6 +44,7 @@ namespace android {
 
 #ifdef ALLWINNER
 static int ALIGN(int x, int y) {
+    // y must be a power of 2.
     return (x + y - 1) & ~(y - 1);
 }
 #endif
@@ -972,10 +973,20 @@ status_t ACodec::configureCodec(
         // a variable number of channels.
 
         int32_t numChannels;
+#ifdef ALLWINNER
+        int32_t sampleRate;
+        if (!msg->findInt32("channel-count", &numChannels)
+				|| !msg->findInt32("sample-rate", &sampleRate)) {
+#else
         if (!msg->findInt32("channel-count", &numChannels)) {
+#endif
             err = INVALID_OPERATION;
         } else {
+#ifdef ALLWINNER
+            err = setupG711Codec(encoder, numChannels, sampleRate);
+#else
             err = setupG711Codec(encoder, numChannels);
+#endif
         }
     } else if (!strcasecmp(mime, MEDIA_MIMETYPE_AUDIO_FLAC)) {
         int32_t numChannels, sampleRate, compressionLevel = -1;
@@ -1272,12 +1283,21 @@ status_t ACodec::setupAMRCodec(bool encoder, bool isWAMR, int32_t bitrate) {
             1 /* numChannels */);
 }
 
+#ifdef ALLWINNER
+status_t ACodec::setupG711Codec(bool encoder, int32_t numChannels, int32_t sampleRate) {
+    CHECK(!encoder);  // XXX TODO
+
+    return setupRawAudioFormat(
+			kPortIndexInput,  sampleRate , numChannels);
+}
+#else
 status_t ACodec::setupG711Codec(bool encoder, int32_t numChannels) {
     CHECK(!encoder);  // XXX TODO
 
     return setupRawAudioFormat(
             kPortIndexInput, 8000 /* sampleRate */, numChannels);
 }
+#endif
 
 status_t ACodec::setupFlacCodec(
         bool encoder, int32_t numChannels, int32_t sampleRate, int32_t compressionLevel) {
@@ -2618,8 +2638,15 @@ void ACodec::BaseState::onInputBufferFilled(const sp<AMessage> &msg) {
                              mCodec->mComponentName.c_str());
                     }
 
+#ifdef ALLWINNER
+					if (buffer->size() > info->mData->capacity())
+						memcpy(info->mData->data(), buffer->data(), info->mData->capacity());
+					else
+						memcpy(info->mData->data(), buffer->data(), buffer->size());
+#else
                     CHECK_LE(buffer->size(), info->mData->capacity());
                     memcpy(info->mData->data(), buffer->data(), buffer->size());
+#endif
                 }
 
                 if (flags & OMX_BUFFERFLAG_CODECCONFIG) {
@@ -2836,7 +2863,8 @@ void ACodec::BaseState::onOutputBufferDrained(const sp<AMessage> &msg) {
             info->mStatus = BufferInfo::OWNED_BY_US;
         }
 #ifdef ALLWINNER
-    } else if (mCodec->mNativeWindowSoft != NULL
+    }
+    else if (mCodec->mNativeWindowSoft != NULL
                 && msg->findInt32("render", &render) && render != 0)  {
         ANativeWindowBuffer *buf;
         int err;
@@ -2871,9 +2899,9 @@ void ACodec::BaseState::onOutputBufferDrained(const sp<AMessage> &msg) {
         buf = NULL;
 
         info->mStatus = BufferInfo::OWNED_BY_US;
-    
 #endif
-    } else {
+    }
+    else {
         info->mStatus = BufferInfo::OWNED_BY_US;
     }
 

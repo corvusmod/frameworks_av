@@ -6,6 +6,10 @@ LOCAL_PATH:= $(call my-dir)
 
 include $(CLEAR_VARS)
 
+ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
+	LOCAL_CFLAGS += -DALLWINNER
+endif
+
 LOCAL_SRC_FILES:=               \
     ActivityManager.cpp         \
     Crypto.cpp                  \
@@ -20,9 +24,9 @@ LOCAL_SRC_FILES:=               \
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_SRC_FILES+= \
-    CedarPlayer.cpp           \
-    CedarAPlayerWrapper.cpp    \
-    SimpleMediaFormatProbe.cpp  \
+    CedarPlayer.cpp       		\
+    CedarAPlayerWrapper.cpp		\
+    SimpleMediaFormatProbe.cpp	\
     MovAvInfoDetect.cpp
 endif
 
@@ -44,8 +48,8 @@ LOCAL_SHARED_LIBRARIES :=     		\
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
 LOCAL_SHARED_LIBRARIES += \
-        libCedarX                 \
-        libCedarA
+	libCedarX           			\
+	libCedarA
 endif
 
 
@@ -71,16 +75,12 @@ LOCAL_C_INCLUDES +=  \
 endif
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS +=-DCEDARX_ANDROID_VERSION=7
-endif
-
-ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
+	LOCAL_CFLAGS +=-DCEDARX_ANDROID_VERSION=7
 endif
 
 ifeq ($(BOARD_USES_QCOM_HARDWARE),true)
     LOCAL_STATIC_LIBRARIES += libmedia_helper
-    LOCAL_C_INCLUDES += $(TOP)/frameworks/av/include/media
+	LOCAL_C_INCLUDES += $(TOP)/frameworks/av/include/media
 endif
 
 LOCAL_MODULE:= libmediaplayerservice

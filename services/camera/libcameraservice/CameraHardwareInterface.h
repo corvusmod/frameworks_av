@@ -683,13 +683,14 @@ private:
     }
 
 #ifdef ALLWINNER
-static int __perform(struct preview_stream_ops *w, int cmd0, int cmd1, int value)
-  {
+	// add interfaces
+	static int __perform(struct preview_stream_ops *w, int cmd0, int cmd1, int value)
+	{
         ANativeWindow *a = anw(w);
         return a->perform(a, cmd0, cmd1, value);
-  }
+	}
 
-  static int __set_buffers_geometryex(struct preview_stream_ops* w,
+	static int __set_buffers_geometryex(struct preview_stream_ops* w,
                       int width, int height, int format, int screenid)
     {
         ANativeWindow *a = anw(w);
@@ -715,8 +716,9 @@ static int __perform(struct preview_stream_ops *w, int cmd0, int cmd1, int value
         mHalPreviewWindow.nw.get_min_undequeued_buffer_count =
                 __get_min_undequeued_buffer_count;
 #ifdef ALLWINNER
-        mHalPreviewWindow.nw.perform = __perform;
-        mHalPreviewWindow.nw.set_buffers_geometryex = __set_buffers_geometryex;
+		// add interfaces
+		mHalPreviewWindow.nw.perform = __perform;
+		mHalPreviewWindow.nw.set_buffers_geometryex = __set_buffers_geometryex;
 #endif
     }
 

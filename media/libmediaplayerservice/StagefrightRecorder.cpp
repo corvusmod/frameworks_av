@@ -98,37 +98,37 @@ StagefrightRecorder::StagefrightRecorder()
 StagefrightRecorder::~StagefrightRecorder() {
     ALOGV("Destructor");
     stop();
-#ifdef ALLWINNEr
+#ifdef ALLWINNER
     if(mOutputPath != NULL) {
-      free(mOutputPath);
-      mOutputPath = NULL;
+    	free(mOutputPath);
+    	mOutputPath = NULL;
     }
 
-  if (mpCedarXRecorder != NULL)
-  {  
-    delete mpCedarXRecorder;
-    mpCedarXRecorder = NULL;
-  }
-  mbHWEncoder = false;
+	if (mpCedarXRecorder != NULL)
+	{	
+		delete mpCedarXRecorder;
+		mpCedarXRecorder = NULL;
+	}
+	mbHWEncoder = false;
 #endif
 }
 
 status_t StagefrightRecorder::init() {
     ALOGV("init");
 #ifdef ALLWINNER
-    if (mpCedarXRecorder != NULL)
-  {
-    ALOGW("mpCedarXRecorder should be NULL at first\n");
-    delete mpCedarXRecorder;
-    mpCedarXRecorder = NULL;
-  }
-  
-  mpCedarXRecorder = new CedarXRecorder();
-  if (mpCedarXRecorder == NULL)
-  {
-    ALOGE("create CedarXRecorder failed\n");
-    return UNKNOWN_ERROR;
-  }
+	if (mpCedarXRecorder != NULL)
+	{
+		ALOGW("mpCedarXRecorder should be NULL at first\n");
+		delete mpCedarXRecorder;
+		mpCedarXRecorder = NULL;
+	}
+	
+	mpCedarXRecorder = new CedarXRecorder();
+	if (mpCedarXRecorder == NULL)
+	{
+		ALOGE("create CedarXRecorder failed\n");
+		return UNKNOWN_ERROR;
+	}
 #endif
     return OK;
 }
@@ -324,8 +324,10 @@ status_t StagefrightRecorder::setOutputFile(const char *path) {
 #endif
     // We don't actually support this at all, as the media_server process
     // no longer has permissions to create files.
+
 #ifdef ALLWINNER
     mOutputPath = strdup(path);
+
     return OK;
 #else
     return -EPERM;
@@ -824,7 +826,6 @@ status_t StagefrightRecorder::setListener(const sp<IMediaRecorderClient> &listen
 }
 
 status_t StagefrightRecorder::prepare() {
-
 #ifdef ALLWINNER
    status_t error = OK;	
 
@@ -863,7 +864,7 @@ status_t StagefrightRecorder::prepare() {
 		} else {
 		    return INVALID_OPERATION;
 		}
-
+		
 		mpCedarXRecorder->setListener(mListener);
 
 		// audio
@@ -900,7 +901,7 @@ status_t StagefrightRecorder::prepare() {
 		// location
 		mpCedarXRecorder->setParamGeoDataLatitude(mLatitudex10000);
 		mpCedarXRecorder->setParamGeoDataLongitude(mLongitudex10000);
-
+		
 		// lapse
 		mpCedarXRecorder->setParamTimeLapseEnable(mCaptureTimeLapse);
 		mpCedarXRecorder->setParamTimeBetweenTimeLapseFrameCapture(mTimeBetweenTimeLapseFrameCaptureUs);
@@ -911,9 +912,9 @@ status_t StagefrightRecorder::prepare() {
 			goto ERROR;
 		}
 	}
+
 ERROR:
     return error;
-
 #else
     return OK;
 #endif
@@ -925,6 +926,13 @@ status_t StagefrightRecorder::start() {
 #else
     CHECK_GE(mOutputFd, 0);
 #endif
+    status_t status = OK;
+
+	if (mbHWEncoder)
+	{
+		status = mpCedarXRecorder->start();
+		goto HWENC_BATTERY;
+	}
 
     if (mWriter != NULL) {
         ALOGE("File writer is not avaialble");
@@ -1936,7 +1944,7 @@ status_t StagefrightRecorder::startMPEG4Recording() {
 
 status_t StagefrightRecorder::pause() {
     ALOGV("pause");
-
+	
 #ifdef ALLWINNER
     if (mbHWEncoder)
 	{
@@ -1944,6 +1952,7 @@ status_t StagefrightRecorder::pause() {
 		goto HWENC_BATTERY;
 	}
 #endif
+	
     if (mWriter == NULL) {
         return UNKNOWN_ERROR;
     }
@@ -2098,9 +2107,9 @@ status_t StagefrightRecorder::getMaxAmplitude(int *max) {
     }
 
 #ifdef ALLWINNER
-    if (mbHWEncoder)
-  {
-    return mpCedarXRecorder->getMaxAmplitude(max);
+	if (mbHWEncoder)
+	{
+		return mpCedarXRecorder->getMaxAmplitude(max);
     }
 #endif
 

@@ -204,7 +204,12 @@ SfRequestContext::SfRequestContext() {
 }
 
 const std::string &SfRequestContext::GetUserAgent(const GURL &url) const {
-    return mUserAgent;
+	if(!gIpadUAEnable) {
+		return mUserAgent;
+	}
+	else {
+		return gIpadUAString;
+	}
 }
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -238,9 +243,10 @@ SfDelegate::~SfDelegate() {
 void SfDelegate::setOwner(ChromiumHTTPDataSource *owner) {
     mOwner = owner;
 }
+
 #ifdef ALLWINNER
 void SfDelegate::setUA(int ua) {
-    gIpadUAEnable = ua;
+	gIpadUAEnable = ua;
 }
 #endif
 
@@ -256,9 +262,11 @@ void SfDelegate::OnReceivedRedirect(
             net::URLRequest *request, const GURL &new_url, bool *defer_redirect) {
     MY_LOGV("OnReceivedRedirect");
 #ifdef ALLWINNER
+    //* add by chenxiaochuan for QQ live stream.
     mOwner->setRedirectHost(new_url.host().c_str());
     mOwner->setRedirectPort(new_url.port().c_str());
     mOwner->setRedirectPath(new_url.path().c_str());
+    //* end.
 #endif
 }
 
