@@ -57,6 +57,9 @@ enum {
     SET_RETRANSMIT_ENDPOINT,
     SET_NEXT_PLAYER,
 #ifdef ALLWINNER
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-9-15 10:51:10 */
+    /* expend interfaces about subtitle, track and so on */
     GET_SUB_COUNT,
     GET_SUB_LIST,
     GET_CUR_SUB,
@@ -90,10 +93,27 @@ enum {
     GET_AUDIO_ENCODE,                   
     GET_AUDIO_BIT_RATE,
     GET_AUDIO_SAMPLE_RATE,
+    /* add by Gary. end   -----------------------------------}} */
+    
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support scale mode */
     ENABLE_SCALE_MODE,
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-03-07 */
+    /* set audio channel mute */
     SET_CHANNEL_MUTE_MODE,
     GET_CHANNEL_MUTE_MODE,
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-4-24 */
+    /* add two general interfaces for expansibility */
     GENERAL_INTERFACE,
+    /* add by Gary. end   -----------------------------------}} */
+
     SET_DATA_SOURCE_STREAM2,
 #endif
 };
@@ -369,6 +389,9 @@ public:
         return reply.readInt32();
     }
 #ifdef ALLWINNER
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-9-14 14:27:12 */
+    /* expend interfaces about subtitle, track and so on */
     int getSubCount()
     {
         Parcel data, reply;
@@ -690,6 +713,11 @@ public:
         return reply.readInt32();
     }
 
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support scale mode */
     status_t enableScaleMode(bool enable, int width, int height)
     {
         Parcel data, reply;
@@ -700,7 +728,11 @@ public:
         remote()->transact(ENABLE_SCALE_MODE, data, &reply);
         return reply.readInt32();
     }
-    
+    /* add by Gary. end   -----------------------------------}} */    
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-03-07 */
+    /* set audio channel mute */
     status_t setChannelMuteMode(int muteMode)
     {
         Parcel data, reply;
@@ -717,7 +749,11 @@ public:
         remote()->transact(GET_CHANNEL_MUTE_MODE, data, &reply);
         return reply.readInt32();
     }
+    /* add by Gary. end   -----------------------------------}} */
     
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-4-24 */
+    /* add two general interfaces for expansibility */
     status_t generalInterface(int cmd, int int1, int int2, int int3, void *p)
     {
         Parcel data, reply;
@@ -741,6 +777,7 @@ public:
         }
         return ret;
     }
+    /* add by Gary. end   -----------------------------------}} */
 #endif
 };
 
@@ -787,13 +824,13 @@ status_t BnMediaPlayer::onTransact(
         }
 #ifdef ALLWINNER
         case SET_DATA_SOURCE_STREAM2: {
-              CHECK_INTERFACE(IMediaPlayer, data, reply);
-              sp<IStreamSource> source =
-                interface_cast<IStreamSource>(data.readStrongBinder());
-              int32_t type = data.readInt32();
-              reply->writeInt32(setDataSource(source, type));
-              return NO_ERROR;
-        }
+			CHECK_INTERFACE(IMediaPlayer, data, reply);
+			sp<IStreamSource> source =
+				interface_cast<IStreamSource>(data.readStrongBinder());
+			int32_t type = data.readInt32();
+			reply->writeInt32(setDataSource(source, type));
+			return NO_ERROR;
+		}
 #endif
         case SET_VIDEO_SURFACETEXTURE: {
             CHECK_INTERFACE(IMediaPlayer, data, reply);
@@ -938,8 +975,10 @@ status_t BnMediaPlayer::onTransact(
             reply->writeInt32(setNextPlayer(interface_cast<IMediaPlayer>(data.readStrongBinder())));
             return NO_ERROR;
         } break;
-
 #ifdef ALLWINNER
+        /* add by Gary. start {{----------------------------------- */
+        /* 2011-9-15 13:06:54 */
+        /* expend interfaces about subtitle, track and so on */
         case GET_SUB_COUNT: {      
             CHECK_INTERFACE(IMediaPlayer, data, reply);
             reply->writeInt32(getSubCount());
@@ -1178,7 +1217,11 @@ status_t BnMediaPlayer::onTransact(
             reply->writeInt32(getAudioSampleRate());
             return NO_ERROR;
         } break;
+        /* add by Gary. end   -----------------------------------}} */
 
+        /* add by Gary. start {{----------------------------------- */
+        /* 2011-11-14 */
+        /* support scale mode */
         case ENABLE_SCALE_MODE: { 
             CHECK_INTERFACE(IMediaPlayer, data, reply);
             int type = data.readInt32();
@@ -1187,7 +1230,11 @@ status_t BnMediaPlayer::onTransact(
             reply->writeInt32(enableScaleMode(type, width, height));
             return NO_ERROR;
         } break;
+        /* add by Gary. end   -----------------------------------}} */
 
+        /* add by Gary. start {{----------------------------------- */
+        /* 2012-03-07 */
+        /* set audio channel mute */
         case SET_CHANNEL_MUTE_MODE: {      
             CHECK_INTERFACE(IMediaPlayer, data, reply);
             reply->writeInt32(setChannelMuteMode(data.readInt32()));
@@ -1198,7 +1245,10 @@ status_t BnMediaPlayer::onTransact(
             reply->writeInt32(getChannelMuteMode());
             return NO_ERROR;
         } break;
-
+        /* add by Gary. end   -----------------------------------}} */
+        /* add by Gary. start {{----------------------------------- */
+        /* 2012-4-24 */
+        /* add two general interfaces for expansibility */
         case GENERAL_INTERFACE: {      
             CHECK_INTERFACE(IMediaPlayer, data, reply);
             int cmd;
@@ -1227,6 +1277,7 @@ status_t BnMediaPlayer::onTransact(
             }
             return NO_ERROR;
         } break;
+        /* add by Gary. end   -----------------------------------}} */
 #endif
         default:
             return BBinder::onTransact(code, data, reply, flags);

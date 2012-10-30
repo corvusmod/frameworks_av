@@ -303,11 +303,16 @@ public:
     virtual void                addBatteryData(uint32_t params);
     // API for the Battery app to pull the data of codecs usage
     virtual status_t            pullBatteryData(Parcel* reply);
-
 #ifdef ALLWINNER
+    /* add by Gary. start {{----------------------------------- */
     virtual status_t            setScreen(int screen);
     virtual status_t            getScreen(int *screen);
     virtual status_t            isPlayingVideo(int *playing);
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support adjusting colors while playing video */
     virtual status_t            setVppGate(bool enableVpp);
     virtual bool                getVppGate();
     virtual status_t            setLumaSharp(int value);
@@ -318,10 +323,22 @@ public:
     virtual int                 getWhiteExtend();
     virtual status_t            setBlackExtend(int value);
     virtual int                 getBlackExtend();
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-03-12 */
+    /* add the global interfaces to control the subtitle gate  */
     virtual status_t            setGlobalSubGate(bool showSub);
     virtual bool                getGlobalSubGate();
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-4-24 */
+    /* add two general interfaces for expansibility */
     virtual status_t            generalGlobalInterface(int cmd, int int1, int int2, int int3, void *p);
+    /* add by Gary. end   -----------------------------------}} */
 #endif
+
 private:
 
     class Client : public BnMediaPlayer {
@@ -353,10 +370,15 @@ private:
         virtual status_t        getParameter(int key, Parcel *reply);
         virtual status_t        setRetransmitEndpoint(const struct sockaddr_in* endpoint);
         virtual status_t        setNextPlayer(const sp<IMediaPlayer>& player);
-
 #ifdef ALLWINNER
+        /* add by Gary. start {{----------------------------------- */
         virtual status_t        setScreen(int screen);
         virtual status_t        isPlayingVideo(int *playing);
+        /* add by Gary. end   -----------------------------------}} */
+
+        /* add by Gary. start {{----------------------------------- */
+        /* 2011-9-15 15:39:01 */
+        /* expend interfaces about subtitle, track and so on */
         virtual int             getSubCount();
         virtual int             getSubList(MediaPlayer_SubInfo *infoList, int count);
         virtual int             getCurSub();
@@ -390,17 +412,38 @@ private:
         virtual status_t        getAudioEncode(char *encode);
         virtual int             getAudioBitRate();
         virtual int             getAudioSampleRate();
+        /* add by Gary. end   -----------------------------------}} */
+        
+        /* add by Gary. start {{----------------------------------- */
+        /* 2011-11-14 */
+        /* support scale mode */
         virtual status_t        enableScaleMode(bool enable, int width, int height);
+        /* add by Gary. end   -----------------------------------}} */
+        
+        /* add by Gary. start {{----------------------------------- */
+        /* 2011-11-14 */
+        /* support adjusting colors while playing video */
         virtual status_t        setVppGate(bool enableVpp);
         virtual status_t        setLumaSharp(int value);
         virtual status_t        setChromaSharp(int value);
         virtual status_t        setWhiteExtend(int value);
         virtual status_t        setBlackExtend(int value);
+        /* add by Gary. end   -----------------------------------}} */
+
+        /* add by Gary. start {{----------------------------------- */
+        /* 2012-03-07 */
+        /* set audio channel mute */
         virtual status_t        setChannelMuteMode(int muteMode);
         virtual int             getChannelMuteMode();
+        /* add by Gary. end   -----------------------------------}} */
+
+        /* add by Gary. start {{----------------------------------- */
+        /* 2012-4-24 */
+        /* add two general interfaces for expansibility */
         virtual status_t        generalInterface(int cmd, int int1, int int2, int int3, void *p);
-        virtual status_t        setDataSource(const sp<IStreamSource> &source, int type);
+        /* add by Gary. end   -----------------------------------}} */
 #endif
+        virtual status_t        setDataSource(const sp<IStreamSource> &source, int type);
 
         sp<MediaPlayerBase>     createPlayer(player_type playerType);
 
@@ -474,9 +517,14 @@ private:
                     struct sockaddr_in          mRetransmitEndpoint;
                     bool                        mRetransmitEndpointValid;
                     sp<Client>                  mNextClient;
-
 #ifdef ALLWINNER
+                    /* add by Gary. start {{----------------------------------- */
                     int                         mHasSurface;
+                    /* add by Gary. end   -----------------------------------}} */
+
+                    /* add by Gary. start {{----------------------------------- */
+                    /* 2011-9-28 16:28:24 */
+                    /* save properties before creating the real player */
                     bool                        mSubGate;
                     int                         mSubColor;
                     int                         mSubFrameColor;
@@ -487,15 +535,26 @@ private:
 					int                         mSubIndex;
 				    int                         mTrackIndex;
                     int                         mMuteMode;   // 2012-03-07, set audio channel mute
+                    /* add by Gary. end   -----------------------------------}} */
+
+                    /* add by Gary. start {{----------------------------------- */
+                    /* 2011-11-14 */
+                    /* support scale mode */
                     bool                        mEnableScaleMode;
                     int                         mScaleWidth;
                     int                         mScaleHeight;
+                    /* add by Gary. end   -----------------------------------}} */
+
+                    /* add by Gary. start {{----------------------------------- */
+                    /* 2011-11-30 */
+                    /* fix the bug about setting global attibute */
                     int                         mScreen;
                     bool                        mVppGate;
                     int                         mLumaSharp;
                     int                         mChromaSharp;
                     int                         mWhiteExtend;
                     int                         mBlackExtend;
+                    /* add by Gary. end   -----------------------------------}} */
 #endif
 
         // Metadata filters.
@@ -525,14 +584,24 @@ private:
                 sp<IOMX>                    mOMX;
                 sp<ICrypto>                 mCrypto;
 #ifdef ALLWINNER
+                /* add by Gary. start {{----------------------------------- */
                 int                         mScreen;
+                /* add by Gary. end   -----------------------------------}} */
+
+                /* add by Gary. start {{----------------------------------- */
+                /* 2011-11-14 */
+                /* support adjusting colors while playing video */
                 bool                        mVppGate;
                 int                         mLumaSharp;
                 int                         mChromaSharp;
                 int                         mWhiteExtend;
                 int                         mBlackExtend;
-                bool                        mGlobalSubGate;
-		wp<Client> mDetectClient;
+                bool                        mGlobalSubGate;  // 2012-03-12, add the global interfaces to control the subtitle gate
+                /* add by Gary. end   -----------------------------------}} */
+                
+                /*Start by Bevis. Detect http data source from other application.*/
+                wp<Client> mDetectClient;
+                /*Start by Bevis. Detect http data source from other application.*/
 #endif
 };
 

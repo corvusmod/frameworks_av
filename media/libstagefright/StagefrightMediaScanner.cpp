@@ -84,15 +84,16 @@ static bool FileHasAcceptableExtension(const char *extension) {
 #endif
         }
     }
+
 #ifdef ALLWINNER
     kNumValidExtensions =
             sizeof(kValidExtensionsAW) / sizeof(kValidExtensionsAW[0]);
 
     for (size_t i = 0; i < kNumValidExtensions; ++i) {
-    if (!strcasecmp(extension, kValidExtensionsAW[i])) {
-      return 2;
-    }
-  }
+		if (!strcasecmp(extension, kValidExtensionsAW[i])) {
+			return 2;
+		}
+	}
 
     return 0;
 #else
@@ -266,14 +267,15 @@ MediaScanResult StagefrightMediaScanner::processFileInternal(
 #else
     sp<MediaMetadataRetriever> mRetriever(new MediaMetadataRetriever);
 
-    int fd = open(path, O_RDONLY | O_LARGEFILE);
-    status_t status;
-    if (fd < 0) {
-        // couldn't open it locally, maybe the media server can?
-        status = mRetriever->setDataSource(path);
-    } else {
-        status = mRetriever->setDataSource(fd, 0, 0x7ffffffffffffffL);
-        close(fd);
+		int fd = open(path, O_RDONLY | O_LARGEFILE);
+		status_t status;
+		if (fd < 0) {
+			// couldn't open it locally, maybe the media server can?
+			status = mRetriever->setDataSource(path);
+		} else {
+			status = mRetriever->setDataSource(fd, 0, 0x7ffffffffffffffL);
+			close(fd);
+		}
     }
 
     if (status) {
@@ -323,7 +325,7 @@ MediaScanResult StagefrightMediaScanner::processFileInternal(
     }
 
     return MEDIA_SCAN_RESULT_OK;
-  }
+}
 #endif
 
 char *StagefrightMediaScanner::extractAlbumArt(int fd) {

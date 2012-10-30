@@ -4,9 +4,8 @@ ifneq ($(TARGET_BUILD_PDK), true)
 include $(CLEAR_VARS)
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
+	LOCAL_CFLAGS += -DALLWINNER
 endif
-
 
 LOCAL_SRC_FILES:=       \
         DataUriSource.cpp \

@@ -20,7 +20,7 @@ LOCAL_C_INCLUDES := \
 	$(TOP)/frameworks/native/include/media/openmax
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
+	LOCAL_CFLAGS += -DALLWINNER
 endif
 
 LOCAL_MODULE:= libstagefright_nuplayer

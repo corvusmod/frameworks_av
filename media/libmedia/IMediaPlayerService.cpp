@@ -39,12 +39,20 @@ enum {
     GET_OMX,
     MAKE_CRYPTO,
     ADD_BATTERY_DATA,
-    PULL_BATTERY_DATA,
+    PULL_BATTERY_DATA
 
 #ifdef ALLWINNER
+    /* add by Gary. start {{----------------------------------- */
+    ,
     SET_SCREEN,
     GET_SCREEN,
-    IS_PLAYING_VIDEO,
+    IS_PLAYING_VIDEO
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support adjusting colors while playing video */
+    ,
     SET_VPP_GATE,
     GET_VPP_GATE,
     SET_LUMA_SHARP,
@@ -54,10 +62,20 @@ enum {
     SET_WHITE_EXTEND,
     GET_WHITE_EXTEND,
     SET_BLACK_EXTEND,
-    GET_BLACK_EXTEND,
+    GET_BLACK_EXTEND
+    /* add by Gary. end   -----------------------------------}} */
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-03-12 */
+    /* add the global interfaces to control the subtitle gate  */
+    ,
     SET_GLOBAL_SUB_GATE,
     GET_GLOBAL_SUB_GATE,
+    /* add by Gary. end   -----------------------------------}} */
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-4-24 */
+    /* add two general interfaces for expansibility */
     GENERAL_GLOBAL_INTERFACE,
+    /* add by Gary. end   -----------------------------------}} */
 #endif
 };
 
@@ -152,6 +170,7 @@ public:
         return remote()->transact(PULL_BATTERY_DATA, data, reply);
     }
 #ifdef ALLWINNER
+    /* add by Gary. start {{----------------------------------- */
     status_t setScreen(int screen)
     {
         Parcel data, reply;
@@ -178,7 +197,11 @@ public:
         *ret = reply.readInt32();
         return reply.readInt32();
     }
+    /* add by Gary. end   -----------------------------------}} */
 
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support adjusting colors while playing video */
     status_t setVppGate(bool enableVpp)
     {
         Parcel data, reply;
@@ -264,6 +287,11 @@ public:
         return reply.readInt32();
     }
     
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-03-12 */
+    /* add the global interfaces to control the subtitle gate  */
     status_t setGlobalSubGate(bool showSub)
     {
         Parcel data, reply;
@@ -280,7 +308,11 @@ public:
         remote()->transact(GET_GLOBAL_SUB_GATE, data, &reply);
         return reply.readInt32();
     }    
+    /* add by Gary. end   -----------------------------------}} */
 
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-4-24 */
+    /* add two general interfaces for expansibility */
     status_t generalGlobalInterface(int cmd, int int1, int int2, int int3, void *p)
     {
         Parcel data, reply;
@@ -300,6 +332,7 @@ public:
         }
         return ret;
     }
+    /* add by Gary. end   -----------------------------------}} */
 #endif
 };
 
@@ -386,8 +419,8 @@ status_t BnMediaPlayerService::onTransact(
             pullBatteryData(reply);
             return NO_ERROR;
         } break;
-
 #ifdef ALLWINNER
+        /* add by Gary. start {{----------------------------------- */
         case SET_SCREEN: {
             CHECK_INTERFACE(IMediaPlayer, data, reply);
             reply->writeInt32(setScreen(data.readInt32()));
@@ -409,7 +442,11 @@ status_t BnMediaPlayerService::onTransact(
             reply->writeInt32(ret);
             return NO_ERROR;
         } break;
+        /* add by Gary. end   -----------------------------------}} */
 
+        /* add by Gary. start {{----------------------------------- */
+        /* 2011-11-14 */
+        /* support adjusting colors while playing video */
         case SET_VPP_GATE: {
             CHECK_INTERFACE(IMediaPlayer, data, reply);
             reply->writeInt32(setVppGate(data.readInt32()));
@@ -460,7 +497,10 @@ status_t BnMediaPlayerService::onTransact(
             reply->writeInt32(getBlackExtend());
             return NO_ERROR;
         } break;
-
+        /* add by Gary. end   -----------------------------------}} */
+        /* add by Gary. start {{----------------------------------- */
+        /* 2012-03-12 */
+        /* add the global interfaces to control the subtitle gate  */
         case SET_GLOBAL_SUB_GATE: {
             CHECK_INTERFACE(IMediaPlayer, data, reply);
             reply->writeInt32(setGlobalSubGate(data.readInt32()));
@@ -471,7 +511,11 @@ status_t BnMediaPlayerService::onTransact(
             reply->writeInt32(getGlobalSubGate());
             return NO_ERROR;
         } break;
-
+        /* add by Gary. end   -----------------------------------}} */
+        /* add by Gary. end   -----------------------------------}} */
+        /* add by Gary. start {{----------------------------------- */
+        /* 2012-4-24 */
+        /* add two general interfaces for expansibility */
         case GENERAL_GLOBAL_INTERFACE: {      
             CHECK_INTERFACE(IMediaPlayer, data, reply);
             int cmd;
@@ -496,6 +540,7 @@ status_t BnMediaPlayerService::onTransact(
             }
             return NO_ERROR;
         } break;
+        /* add by Gary. end   -----------------------------------}} */
 #endif
         default:
             return BBinder::onTransact(code, data, reply, flags);

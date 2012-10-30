@@ -14,7 +14,7 @@ LOCAL_CFLAGS += -DMALI_ALIGNMENT
 endif
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
+	LOCAL_CFLAGS += -DALLWINNER
 endif
 
 LOCAL_MODULE:= libstagefright_color_conversion

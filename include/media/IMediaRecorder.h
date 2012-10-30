@@ -58,7 +58,7 @@ public:
     virtual sp<ISurfaceTexture> querySurfaceMediaSource() = 0;
 #ifdef ALLWINNER
     virtual status_t queueBuffer(int index, int addr_y, int addr_c, int64_t timestamp) = 0;
-    virtual  sp<IMemory> getOneBsFrame(int mode) = 0;
+    virtual sp<IMemory> getOneBsFrame(int mode) = 0;
 #endif
 };
 

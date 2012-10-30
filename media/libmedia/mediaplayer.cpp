@@ -63,8 +63,10 @@ MediaPlayer::MediaPlayer()
     AudioSystem::acquireAudioSessionId(mAudioSessionId);
     mSendLevel = 0;
     mRetransmitEndpointValid = false;
-
 #ifdef ALLWINNER
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-9-28 16:28:24 */
+    /* save properties before creating the real player */
     mSubGate = true;
     mSubColor = 0xFFFFFFFF;
     mSubFrameColor = 0xFF000000;
@@ -74,7 +76,8 @@ MediaPlayer::MediaPlayer()
     strcpy(mSubCharset, CHARSET_GBK);
 	mSubIndex = 0;
     mTrackIndex = 0;
-    mMuteMode = AUDIO_CHANNEL_MUTE_NONE;
+    mMuteMode = AUDIO_CHANNEL_MUTE_NONE;  // 2012-03-07, set audio channel mute
+    /* add by Gary. end   -----------------------------------}} */
 #endif
 }
 
@@ -165,6 +168,9 @@ status_t MediaPlayer::setDataSource(
                 player.clear();
             }
 #ifdef ALLWINNER
+            /* add by Gary. start {{----------------------------------- */
+            /* 2011-9-28 16:28:24 */
+            /* save properties before creating the real player */
             if(player != 0) {
 	    	    //player->setSubGate(mSubGate);
             	player->setSubColor(mSubColor);
@@ -175,8 +181,9 @@ status_t MediaPlayer::setDataSource(
             	player->setSubCharset(mSubCharset);
             	player->switchSub(mSubIndex);
             	player->switchTrack(mTrackIndex);
-                player->setChannelMuteMode(mMuteMode);
+                player->setChannelMuteMode(mMuteMode); // 2012-03-07, set audio channel mute
 	    }
+            /* add by Gary. end   -----------------------------------}} */
 #endif
             err = attachNewPlayer(player);
         }
@@ -831,6 +838,7 @@ status_t MediaPlayer::setNextMediaPlayer(const sp<MediaPlayer>& next) {
 }
 
 #ifdef ALLWINNER
+/* add by Gary.  {{----------------------------------- */
 status_t MediaPlayer::setScreen(int screen)
 {
     ALOGV("setScreen");
@@ -872,6 +880,11 @@ status_t MediaPlayer::isPlayingVideo(bool *playing)
         return BAD_VALUE;
     }
 }
+/* add by Gary. end   -----------------------------------}} */
+
+/* add by Gary. start {{----------------------------------- */
+/* 2011-9-14 14:27:12 */
+/* expend interfaces about subtitle, track and so on */
 int MediaPlayer::getSubCount()
 {
     Mutex::Autolock lock(mLock);
@@ -1209,6 +1222,11 @@ int MediaPlayer::getAudioSampleRate()
 }
 
 
+/* add by Gary. end   -----------------------------------}} */
+
+/* add by Gary. start {{----------------------------------- */
+/* 2011-11-14 */
+/* support scale mode */
 status_t MediaPlayer::enableScaleMode(bool enable, int width, int height)
 {
     Mutex::Autolock lock(mLock);
@@ -1217,6 +1235,11 @@ status_t MediaPlayer::enableScaleMode(bool enable, int width, int height)
     }
     return mPlayer->enableScaleMode(enable, width, height);
 }
+/* add by Gary. end   -----------------------------------}} */
+
+/* add by Gary. start {{----------------------------------- */
+/* 2011-11-14 */
+/* support adjusting colors while playing video */
 status_t MediaPlayer::setVppGate(bool enableVpp)
 {
     const sp<IMediaPlayerService>& service(getMediaPlayerService());
@@ -1317,6 +1340,11 @@ status_t MediaPlayer::setBlackExtend(int value)
     }
 }
 
+/* add by Gary. end   -----------------------------------}} */
+
+/* add by Gary. start {{----------------------------------- */
+/* 2012-03-07 */
+/* set audio channel mute */
 status_t MediaPlayer::setChannelMuteMode(int muteMode)
 {
     Mutex::Autolock lock(mLock);
@@ -1336,6 +1364,11 @@ int MediaPlayer::getChannelMuteMode()
     }
     return mPlayer->getChannelMuteMode();
 }
+/* add by Gary. end   -----------------------------------}} */
+
+/* add by Gary. start {{----------------------------------- */
+/* 2012-03-12 */
+/* add the global interfaces to control the subtitle gate  */
 
 bool MediaPlayer::getGlobalSubGate()
 {
@@ -1356,6 +1389,11 @@ status_t MediaPlayer::setGlobalSubGate(bool showSub)
         return BAD_VALUE;
     }
 }
+/* add by Gary. end   -----------------------------------}} */
+
+/* add by Gary. start {{----------------------------------- */
+/* 2012-4-24 */
+/* add two general interfaces for expansibility */
 status_t MediaPlayer::generalInterface(int cmd, int int1, int int2, int int3, void *p)
 {
     Mutex::Autolock lock(mLock);
@@ -1374,6 +1412,8 @@ status_t MediaPlayer::generalGlobalInterface(int cmd, int int1, int int2, int in
         return NO_INIT;
     }
 }
+
+/* add by Gary. end   -----------------------------------}} */
 #endif
 
 }; // namespace android

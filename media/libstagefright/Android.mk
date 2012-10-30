@@ -9,7 +9,7 @@ endif
 
 include frameworks/av/media/libstagefright/codecs/common/Config.mk
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-include $(TOP)/external/cedarx/Config.mk
+	include $(TOP)/external/cedarx/Config.mk
 endif
 
 ifeq ($(TARGET_SOC),exynos4210)
@@ -21,9 +21,8 @@ LOCAL_CFLAGS += -DCONFIG_MFC_FPS
 endif
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
+	LOCAL_CFLAGS += -DALLWINNER
 endif
-
 
 LOCAL_SRC_FILES:=                         \
         ACodec.cpp                        \
@@ -152,8 +151,7 @@ ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
     endif
 else
 LOCAL_STATIC_LIBRARIES += \
-        libstagefright_httplive
-
+		libstagefright_httplive
 endif
 
 ifeq ($(call is-vendor-board-platform,QCOM),true)

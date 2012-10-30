@@ -22,7 +22,7 @@ ifeq ($(BOARD_USE_SECTVOUT),true)
 endif
 
 ifeq ($(TARGET_BOARD_PLATFORM),exDroid)
-LOCAL_CFLAGS += -DALLWINNER
+	LOCAL_CFLAGS += -DALLWINNER
 endif
 
 # FIXME The duplicate audioflinger is temporary

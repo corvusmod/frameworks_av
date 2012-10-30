@@ -27,7 +27,6 @@
 
 #include <utils/KeyedVector.h>
 #include <utils/String8.h>
-
 #ifdef ALLWINNER
 #include "mediaplayerinfo.h"
 #endif
@@ -40,6 +39,7 @@ class Surface;
 class ISurfaceTexture;
 
 #ifdef ALLWINNER
+//add by Bevis, for Dlna source detector
 #define DLNA_SOURCE_DETECTOR "com.softwinner.dlnasourcedetector"
 #endif
 
@@ -54,7 +54,7 @@ enum media_event_type {
     MEDIA_ERROR             = 100,
     MEDIA_INFO              = 200,
 #ifdef ALLWINNER
-    MEDIA_SOURCE_DETECTED  = 234,
+    MEDIA_SOURCE_DETECTED	= 234,		//add by Bevis, for Dlna source detector
 #endif
 };
 
@@ -137,13 +137,14 @@ enum media_info_type {
 };
 
 #ifdef ALLWINNER
+/* add by Gary. start {{----------------------------------- */
 /**
 *  screen name
 */
 #define MASTER_SCREEN        0
 #define SLAVE_SCREEN         1
+/* add by Gary. end   -----------------------------------}} */
 #endif
-
 
 enum media_player_states {
     MEDIA_PLAYER_STATE_ERROR        = 0,
@@ -248,9 +249,16 @@ public:
             status_t        setRetransmitEndpoint(const char* addrString, uint16_t port);
             status_t        setNextMediaPlayer(const sp<MediaPlayer>& player);
 #ifdef ALLWINNER
-            static  status_t        setScreen(int screen);
-            static  status_t        getScreen(int *screen);
-            static  status_t        isPlayingVideo(bool *playing);
+    /* add by Gary. start {{----------------------------------- */
+    static  status_t        setScreen(int screen);
+    static  status_t        getScreen(int *screen);
+    static  status_t        isPlayingVideo(bool *playing);
+    /* add by Gary. end   -----------------------------------}} */
+    
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-9-13 14:05:05 */
+    /* expend interfaces about subtitle, track and so on */
+#endif
             int             getSubCount();
             int             getSubList(MediaPlayer_SubInfo *infoList, int count);
             int             getCurSub();
@@ -284,23 +292,54 @@ public:
             status_t        getAudioEncode(char *encode);
             int             getAudioBitRate();
             int             getAudioSampleRate();
+#ifdef ALLWINNER
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support scale mode */
+#endif
             status_t        enableScaleMode(bool enable, int width, int height);
-            static  status_t        setVppGate(bool enableVpp);
-            static  bool            getVppGate();
-            static  status_t        setLumaSharp(int value);
-            static  int             getLumaSharp();
-            static  status_t        setChromaSharp(int value);
-            static  int             getChromaSharp();
-            static  status_t        setWhiteExtend(int value);
-            static  int             getWhiteExtend();
-            static  status_t        setBlackExtend(int value);
-            static  int             getBlackExtend();
-            status_t        setChannelMuteMode(int muteMode);
-            int             getChannelMuteMode();
-            static  status_t        setGlobalSubGate(bool showSub);
-            static  bool            getGlobalSubGate();
-            status_t        generalInterface(int cmd, int int1, int int2, int int3, void *p);
-            static  status_t        generalGlobalInterface(int cmd, int int1, int int2, int int3, void *p);
+#ifdef ALLWINNER
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-11-14 */
+    /* support adjusting colors while playing video */
+    static  status_t        setVppGate(bool enableVpp);
+    static  bool            getVppGate();
+    static  status_t        setLumaSharp(int value);
+    static  int             getLumaSharp();
+    static  status_t        setChromaSharp(int value);
+    static  int             getChromaSharp();
+    static  status_t        setWhiteExtend(int value);
+    static  int             getWhiteExtend();
+    static  status_t        setBlackExtend(int value);
+    static  int             getBlackExtend();
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-03-07 */
+    /* set audio channel mute */
+#endif
+	status_t        setChannelMuteMode(int muteMode);
+	int             getChannelMuteMode();
+#ifdef ALLWINNER
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-03-12 */
+    /* add the global interfaces to control the subtitle gate  */
+    static  status_t        setGlobalSubGate(bool showSub);
+    static  bool            getGlobalSubGate();
+    /* add by Gary. end   -----------------------------------}} */
+
+    /* add by Gary. start {{----------------------------------- */
+    /* 2012-4-24 */
+    /* add two general interfaces for expansibility */
+	status_t        generalInterface(int cmd, int int1, int int2, int int3, void *p);
+	static  status_t        generalGlobalInterface(int cmd, int int1, int int2, int int3, void *p);
+    /* add by Gary. end   -----------------------------------}} */
 #endif
 
 private:
@@ -336,6 +375,9 @@ private:
     struct sockaddr_in          mRetransmitEndpoint;
     bool                        mRetransmitEndpointValid;
 #ifdef ALLWINNER
+    /* add by Gary. start {{----------------------------------- */
+    /* 2011-9-28 16:28:24 */
+    /* save properties before creating the real player */
     bool                        mSubGate;
     int                         mSubColor;
     int                         mSubFrameColor;
@@ -343,9 +385,10 @@ private:
     int                         mSubDelay;
     int                         mSubFontSize;
     char                        mSubCharset[MEDIAPLAYER_NAME_LEN_MAX];
-    int                         mSubIndex;
+	int                         mSubIndex;
     int                         mTrackIndex;
-    int                         mMuteMode;
+    int                         mMuteMode;   // 2012-03-07, set audio channel mute
+   /* add by Gary. end   -----------------------------------}} */
 #endif
 };
 

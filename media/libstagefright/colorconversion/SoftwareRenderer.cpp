@@ -205,7 +205,8 @@ void SoftwareRenderer::render(
             dst_v += dst_c_stride;
         }
 #ifdef ALLWINNER
-     } else if (mColorFormat == HAL_PIXEL_FORMAT_YV12) {
+    }
+    else if (mColorFormat == HAL_PIXEL_FORMAT_YV12) {
         size_t dst_y_size = buf->stride * buf->height;
         size_t dst_c_stride = ALIGN(buf->stride / 2, 16);
         size_t dst_c_size = dst_c_stride * buf->height / 2;

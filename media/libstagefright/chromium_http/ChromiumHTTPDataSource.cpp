@@ -38,10 +38,10 @@ ChromiumHTTPDataSource::ChromiumHTTPDataSource(uint32_t flags)
       mContentSize(-1),
       mDecryptHandle(NULL),
       mDrmManagerClient(NULL) {
-      mDelegate->setOwner(this);
 #ifdef ALLWINNER
-      mDelegate->setUA(!!(mFlags & kFlagUAIPAD));
-      mIsRedirected = false;
+	  mDelegate->setOwner(this);
+	  mDelegate->setUA(!!(mFlags & kFlagUAIPAD));
+	  mIsRedirected = false;
 #endif 
 }
 
@@ -75,6 +75,8 @@ status_t ChromiumHTTPDataSource::connect(
 }
 
 #ifdef ALLWINNER
+//* add by chenxiaochuan for QQ live stream.
+
 AString ChromiumHTTPDataSource::getRedirectUri()
 {
 	char* tmp;
@@ -128,6 +130,7 @@ AString ChromiumHTTPDataSource::getRedirectUri()
 
 	return mRedirectURI;
 }
+
 bool ChromiumHTTPDataSource::isRedirected()
 {
 	return mIsRedirected;
@@ -148,6 +151,7 @@ void ChromiumHTTPDataSource::setRedirectPath(const char* path)
 {
 	mRedirectPath = path;
 }
+//* end.
 #endif
 
 status_t ChromiumHTTPDataSource::connect_l(
@@ -168,7 +172,8 @@ status_t ChromiumHTTPDataSource::connect_l(
     mURI = uri;
 #ifdef ALLWINNER
     mIsRedirected = false;
-    //LOG_PRI(ANDROID_LOG_VERBOSE, LOG_TAG, "uri = %s.", uri);
+
+	//LOG_PRI(ANDROID_LOG_VERBOSE, LOG_TAG, "uri = %s.", uri);
 #endif
     mContentType = String8("application/octet-stream");
 
