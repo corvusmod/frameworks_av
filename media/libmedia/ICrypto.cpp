@@ -91,7 +91,7 @@ struct BpCrypto : public BpInterface<ICrypto> {
         return reply.readInt32() != 0;
     }
 
-    virtual status_t decrypt(
+    virtual ssize_t decrypt(
             bool secure,
             const uint8_t key[16],
             const uint8_t iv[16],
@@ -136,7 +136,7 @@ struct BpCrypto : public BpInterface<ICrypto> {
 
         remote()->transact(DECRYPT, data, &reply);
 
-        status_t result = reply.readInt32();
+        ssize_t result = reply.readInt32();
 
         if (result >= ERROR_DRM_VENDOR_MIN && result <= ERROR_DRM_VENDOR_MAX) {
             errorDetailMsg->setTo(reply.readCString());
@@ -260,7 +260,7 @@ status_t BnCrypto::onTransact(
 
             AString errorDetailMsg;
 
-            status_t err = decrypt(
+            ssize_t err = decrypt(
                     secure,
                     key,
                     iv,

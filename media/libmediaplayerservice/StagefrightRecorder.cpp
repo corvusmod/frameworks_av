@@ -939,7 +939,6 @@ status_t StagefrightRecorder::start() {
         return UNKNOWN_ERROR;
     }
 
-    status_t status = OK;
 #if defined(QCOM_HARDWARE) && defined(QCOM_FM_ENABLED)
     if(AUDIO_SOURCE_FM_RX_A2DP == mAudioSource)
         return startFMA2DPWriter();

@@ -39,7 +39,7 @@ public:
 #ifdef ALLWINNER
         kIncludeExtensiveMetaData = 1,
         kIncludeExtensiveMetaDataBitrate = 256
-else
+#else
         kIncludeExtensiveMetaData = 1
 #endif
     };
