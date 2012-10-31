@@ -441,9 +441,9 @@ private:
         /* 2012-4-24 */
         /* add two general interfaces for expansibility */
         virtual status_t        generalInterface(int cmd, int int1, int int2, int int3, void *p);
+        virtual status_t        setDataSource(const sp<IStreamSource> &source, int type);
         /* add by Gary. end   -----------------------------------}} */
 #endif
-        virtual status_t        setDataSource(const sp<IStreamSource> &source, int type);
 
         sp<MediaPlayerBase>     createPlayer(player_type playerType);
 
