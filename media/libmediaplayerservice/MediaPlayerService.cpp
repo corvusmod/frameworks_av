@@ -246,19 +246,6 @@ typedef struct {
 } extmap;
 
 extmap FILE_EXTS [] =  {
-#ifdef ALLWINNER
-		{".ogg", STAGEFRIGHT_PLAYER},
-		{".mp3", STAGEFRIGHT_PLAYER},
-		{".wav", STAGEFRIGHT_PLAYER},
-		{".amr", STAGEFRIGHT_PLAYER},
-		{".flac", STAGEFRIGHT_PLAYER},
-		{".m4a", STAGEFRIGHT_PLAYER},
-		{".m4r", STAGEFRIGHT_PLAYER},
-		{".out", STAGEFRIGHT_PLAYER},
-		//{".3gp", STAGEFRIGHT_PLAYER},
-
-		//{".aac", STAGEFRIGHT_PLAYER},
-#endif
         {".mid", SONIVOX_PLAYER},
         {".midi", SONIVOX_PLAYER},
         {".smf", SONIVOX_PLAYER},
@@ -268,6 +255,16 @@ extmap FILE_EXTS [] =  {
         {".rtx", SONIVOX_PLAYER},
         {".ota", SONIVOX_PLAYER},
 #ifdef ALLWINNER
+        {".ogg", STAGEFRIGHT_PLAYER},
+        {".mp3", STAGEFRIGHT_PLAYER},
+        {".wav", STAGEFRIGHT_PLAYER},
+        {".amr", STAGEFRIGHT_PLAYER},
+        {".flac", STAGEFRIGHT_PLAYER},
+        {".m4a", STAGEFRIGHT_PLAYER},
+        {".m4r", STAGEFRIGHT_PLAYER},
+        {".out", STAGEFRIGHT_PLAYER},
+        //{".3gp", STAGEFRIGHT_PLAYER},
+        //{".aac", STAGEFRIGHT_PLAYER},
         {".ape", CEDARA_PLAYER},
         {".ac3", CEDARA_PLAYER},
         {".dts", CEDARA_PLAYER},
@@ -275,14 +272,16 @@ extmap FILE_EXTS [] =  {
         {".aac", CEDARA_PLAYER},
         {".mp2", CEDARA_PLAYER},
         {".mp1", CEDARA_PLAYER},
+#endif
 };
 
+#ifdef ALLWINNER
 extmap MP4A_FILE_EXTS [] =  {
 	{".m4a", CEDARX_PLAYER},
 	{".m4r", CEDARX_PLAYER},
 	{".3gpp", CEDARX_PLAYER},
-#endif
 };
+#endif
 
 // TODO: Find real cause of Audio/Video delay in PV framework and remove this workaround
 /* static */ int MediaPlayerService::AudioOutput::mMinBufferCount = 4;

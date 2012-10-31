@@ -27,6 +27,7 @@
 
 #include <utils/KeyedVector.h>
 #include <utils/String8.h>
+
 #ifdef ALLWINNER
 #include "mediaplayerinfo.h"
 #endif
@@ -258,7 +259,6 @@ public:
     /* add by Gary. start {{----------------------------------- */
     /* 2011-9-13 14:05:05 */
     /* expend interfaces about subtitle, track and so on */
-#endif
             int             getSubCount();
             int             getSubList(MediaPlayer_SubInfo *infoList, int count);
             int             getCurSub();
@@ -292,15 +292,12 @@ public:
             status_t        getAudioEncode(char *encode);
             int             getAudioBitRate();
             int             getAudioSampleRate();
-#ifdef ALLWINNER
     /* add by Gary. end   -----------------------------------}} */
 
     /* add by Gary. start {{----------------------------------- */
     /* 2011-11-14 */
     /* support scale mode */
-#endif
             status_t        enableScaleMode(bool enable, int width, int height);
-#ifdef ALLWINNER
     /* add by Gary. end   -----------------------------------}} */
 
     /* add by Gary. start {{----------------------------------- */
@@ -321,10 +318,8 @@ public:
     /* add by Gary. start {{----------------------------------- */
     /* 2012-03-07 */
     /* set audio channel mute */
-#endif
 	status_t        setChannelMuteMode(int muteMode);
 	int             getChannelMuteMode();
-#ifdef ALLWINNER
     /* add by Gary. end   -----------------------------------}} */
 
     /* add by Gary. start {{----------------------------------- */
