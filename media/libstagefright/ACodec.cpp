@@ -2639,10 +2639,10 @@ void ACodec::BaseState::onInputBufferFilled(const sp<AMessage> &msg) {
                     }
 
 #ifdef ALLWINNER
-					if (buffer->size() > info->mData->capacity())
-						memcpy(info->mData->data(), buffer->data(), info->mData->capacity());
-					else
-						memcpy(info->mData->data(), buffer->data(), buffer->size());
+	if (buffer->size() > info->mData->capacity())
+		memcpy(info->mData->data(), buffer->data(), info->mData->capacity());
+	else
+		memcpy(info->mData->data(), buffer->data(), buffer->size());
 #else
                     CHECK_LE(buffer->size(), info->mData->capacity());
                     memcpy(info->mData->data(), buffer->data(), buffer->size());
